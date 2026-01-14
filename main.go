@@ -9,5 +9,6 @@ import (
 func main() {
 	r := gin.Default()
 	routes.RegisterMonitorRoutes(r)
-	r.Run(":8080")
+	routes.RegisterProcessRoutes(r)
+	r.Run("localhost:8080")
 }

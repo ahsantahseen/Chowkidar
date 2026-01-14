@@ -50,7 +50,6 @@ func GetMemoryUsage() (*models.MemoryStatus, error) {
 	return &models.MemoryStatus{
 		TotalGB:      float64(virtualMemory.Total) / GB,
 		UsedGB:       float64(virtualMemory.Used) / GB,
-		FreeGB:       float64(virtualMemory.Free) / GB,
 		AvailableGB:  float64(virtualMemory.Available) / GB,
 		UsagePercent: virtualMemory.UsedPercent,
 	}, nil
