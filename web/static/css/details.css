@@ -1,0 +1,254 @@
+/* Details Page Styles */
+
+.details-main {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding: 20px 0;
+}
+
+.details-section {
+  background: linear-gradient(
+    135deg,
+    var(--bg-light) 0%,
+    rgba(13, 71, 161, 0.05) 100%
+  );
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 30px;
+  box-shadow: var(--shadow);
+}
+
+.details-section h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: var(--text);
+}
+
+.btn-back {
+  background: linear-gradient(
+    135deg,
+    var(--primary) 0%,
+    var(--primary-light) 100%
+  );
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.btn-back:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(13, 71, 161, 0.3);
+}
+
+/* Metrics Container */
+.metrics-container,
+.network-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.metric-item {
+  background: rgba(13, 71, 161, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+}
+
+.metric-item label {
+  display: block;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.value-large {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 10px 0;
+}
+
+/* Progress Bar */
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 12px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+/* Charts */
+.chart-large,
+.chart-medium {
+  position: relative;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.chart-large {
+  height: 400px;
+}
+
+.chart-medium {
+  height: 300px;
+}
+
+.chart-large canvas,
+.chart-medium canvas {
+  max-height: 100%;
+}
+
+/* Tables */
+.details-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.details-table thead {
+  border-bottom: 2px solid var(--border);
+  background: rgba(13, 71, 161, 0.05);
+}
+
+.details-table th {
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text);
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.details-table td {
+  padding: 15px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  font-size: 14px;
+}
+
+.details-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.details-table tbody tr:hover {
+  background-color: rgba(13, 71, 161, 0.1);
+}
+
+.details-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Core Grid */
+.cores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.core-item {
+  background: rgba(13, 71, 161, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 15px;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.core-item:hover {
+  border-color: var(--primary);
+  background: rgba(13, 71, 161, 0.1);
+}
+
+.core-item .label {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.core-item .value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* Info Box */
+.info-box {
+  background: rgba(13, 71, 161, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 15px;
+}
+
+.info-box p {
+  margin: 10px 0;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.info-box strong {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .details-section {
+    padding: 20px;
+  }
+
+  .metrics-container,
+  .network-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .value-large {
+    font-size: 24px;
+  }
+
+  .chart-large {
+    height: 300px;
+  }
+
+  .chart-medium {
+    height: 250px;
+  }
+
+  .details-table {
+    font-size: 12px;
+  }
+
+  .details-table th,
+  .details-table td {
+    padding: 10px;
+  }
+
+  .cores-grid {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  }
+}

@@ -219,6 +219,58 @@ func GetDiskUsageSimple() map[string]float64 {
 		"disk_percent": diskStatus.UsagePercent,
 	}
 }
+
+// GetAggregatedNetwork returns aggregated network statistics with totals and rates
+func GetAggregatedNetwork() (*models.AggregatedNetworkStatus, error) {
+	interfaces, err := GetNetworkUsage()
+	if err != nil {
+		return nil, err
+	}
+
+	var totalBytesSent uint64
+	var totalBytesRecv uint64
+	var totalPacketsSent uint64
+	var totalPacketsRecv uint64
+	var totalErrorsIn uint64
+	var totalErrorsOut uint64
+	var totalDropsIn uint64
+	var totalDropsOut uint64
+
+	for _, iface := range interfaces {
+		totalBytesSent += iface.BytesSent
+		totalBytesRecv += iface.BytesRecv
+		totalPacketsSent += iface.PacketsSent
+		totalPacketsRecv += iface.PacketsRecv
+		totalErrorsIn += iface.ErrorsIn
+		totalErrorsOut += iface.ErrorsOut
+		totalDropsIn += iface.DropsIn
+		totalDropsOut += iface.DropsOut
+	}
+
+	// Get rates from history
+	history := GetLatestNetworkHistory()
+	bytesSentRate := 0.0
+	bytesRecvRate := 0.0
+	if history != nil {
+		bytesSentRate = history.BytesSentRate
+		bytesRecvRate = history.BytesRecvRate
+	}
+
+	return &models.AggregatedNetworkStatus{
+		BytesSent:     totalBytesSent,
+		BytesRecv:     totalBytesRecv,
+		BytesSentRate: bytesSentRate,
+		BytesRecvRate: bytesRecvRate,
+		PacketsSent:   totalPacketsSent,
+		PacketsRecv:   totalPacketsRecv,
+		ErrorsIn:      totalErrorsIn,
+		ErrorsOut:     totalErrorsOut,
+		DropsIn:       totalDropsIn,
+		DropsOut:      totalDropsOut,
+		Interfaces:    interfaces,
+	}, nil
+}
+
 func GetNetworkTotalsSimple() map[string]float64 {
 	networkTotals, err := GetNetworkTotals()
 	if err != nil {

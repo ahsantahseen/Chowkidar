@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disk Details - Chowkidar</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/details.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="logo">⚙️ Chowkidar</h1>
+                <p class="subtitle">Disk Details</p>
+            </div>
+            <a href="/" class="btn-back">← Back to Dashboard</a>
+        </header>
+
+        <!-- Main Content -->
+        <main class="details-main">
+            <!-- Current Disk Status -->
+            <section class="details-section">
+                <h2>Current Disk Status</h2>
+                <div class="metrics-container">
+                    <div class="metric-item">
+                        <label>Usage</label>
+                        <div class="value-large" id="diskUsage">--</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="diskProgressBar"></div>
+                        </div>
+                    </div>
+                    <div class="metric-item">
+                        <label>Used</label>
+                        <div class="value-large" id="diskUsed">-- GB</div>
+                    </div>
+                    <div class="metric-item">
+                        <label>Available</label>
+                        <div class="value-large" id="diskAvailable">-- GB</div>
+                    </div>
+                    <div class="metric-item">
+                        <label>Total</label>
+                        <div class="value-large" id="diskTotal">-- GB</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Disk Usage Pie Chart -->
+            <section class="details-section">
+                <h2>Disk Space Distribution</h2>
+                <div class="chart-medium">
+                    <canvas id="diskBreakdownChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Disk Usage Trend -->
+            <section class="details-section">
+                <h2>Disk Usage Trend (24 Hours)</h2>
+                <div class="chart-large">
+                    <canvas id="diskDetailChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Disk Information -->
+            <section class="details-section">
+                <h2>Storage Information</h2>
+                <div class="info-box">
+                    <p><strong>Mount Point:</strong> <span id="mountPoint">--</span></p>
+                    <p><strong>File System:</strong> <span id="fileSystem">--</span></p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/static/js/details-disk.js"></script>
+</body>
+
+</html>

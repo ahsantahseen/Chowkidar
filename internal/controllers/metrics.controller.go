@@ -18,7 +18,7 @@ func GetAllMetrics(c *gin.Context) {
 }
 
 func GetCPU(c *gin.Context) {
-	cpu, err := services.GetCPUUsage()
+	cpu, err := services.GetCachedCPU()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -27,7 +27,7 @@ func GetCPU(c *gin.Context) {
 }
 
 func GetMemory(c *gin.Context) {
-	memory, err := services.GetMemoryUsage()
+	memory, err := services.GetCachedMemory()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -36,7 +36,7 @@ func GetMemory(c *gin.Context) {
 }
 
 func GetDisk(c *gin.Context) {
-	disk, err := services.GetDiskUsage("/")
+	disk, err := services.GetCachedDisk()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -45,7 +45,16 @@ func GetDisk(c *gin.Context) {
 }
 
 func GetNetwork(c *gin.Context) {
-	network, err := services.GetNetworkUsage()
+	network, err := services.GetCachedNetwork()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, network)
+}
+
+func GetAggregatedNetwork(c *gin.Context) {
+	network, err := services.GetAggregatedNetwork()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
