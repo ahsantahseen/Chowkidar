@@ -5,12 +5,13 @@ title: Chowkidar
 
 # Chowkidar
 
-<div style="margin: 24px 0 32px; padding: 24px; background: #1f2230; border-radius: 18px;">
-	<h2 style="margin: 0 0 10px;">System Monitoring, Beautifully Packaged</h2>
-	<p style="margin: 0; color: #c9cbd4;">Desktop GUI + lightweight agents for servers everywhere.</p>
+<div style="margin: 28px 0 36px; padding: 28px; border-radius: 20px; background: radial-gradient(circle at top left, #2c3450, #1b1e2a);">
+	<p style="margin: 0 0 8px; text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.75rem; color: #94a3b8;">System Monitoring</p>
+	<h2 style="margin: 0 0 10px; font-size: 2rem;">Modern desktop dashboards with lightweight agents</h2>
+	<p style="margin: 0; color: #cbd5f5; font-size: 1.05rem;">Install the agent on any server, connect with the GUI, and monitor in real time.</p>
 </div>
 
-![Chowkidar Desktop](assets/dashboard-placeholder.png)
+![Chowkidar Desktop](assets/dashboard-placeholder.svg)
 
 ## Install
 
@@ -60,9 +61,9 @@ curl http://localhost:8080/auth/token
 
 ## Screenshots
 
-![Servers list](assets/servers-placeholder.png)
+![Servers list](assets/servers-placeholder.svg)
 
-![Dashboard](assets/dashboard-details-cpu.png)
+![Dashboard](assets/dashboard-placeholder.svg)
 
 ## Support
 
