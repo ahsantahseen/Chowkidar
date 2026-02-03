@@ -11,7 +11,7 @@ title: Chowkidar
 	<p style="margin: 0; color: #cbd5f5; font-size: 1.05rem;">Install the agent on any server, connect with the GUI, and monitor in real time.</p>
 </div>
 
-![Chowkidar Desktop](assets/dashboard-placeholder.svg)
+![Chowkidar Desktop](assets/dashboard-placeholder.png)
 
 ## Install
 
@@ -61,9 +61,9 @@ curl http://localhost:8080/auth/token
 
 ## Screenshots
 
-![Servers list](assets/servers-placeholder.svg)
+![Servers list](assets/servers-placeholder.png)
 
-![Dashboard](assets/dashboard-placeholder.svg)
+![CPU Details](assets/dashboard-details-cpu.png)
 
 ## Support
 
