@@ -5,17 +5,21 @@ title: Chowkidar
 
 # Chowkidar
 
-<div style="margin: 28px 0 36px; padding: 28px; border-radius: 20px; background: radial-gradient(circle at top left, #2c3450, #1b1e2a);">
-	<p style="margin: 0 0 8px; text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.75rem; color: #94a3b8;">System Monitoring</p>
-	<h2 style="margin: 0 0 10px; font-size: 2rem;">Modern desktop dashboards with lightweight agents</h2>
-	<p style="margin: 0; color: #cbd5f5; font-size: 1.05rem;">Install the agent on any server, connect with the GUI, and monitor in real time.</p>
+<div style="margin: 36px 0 32px; text-align: center;">
+	<p style="margin: 0 0 10px; text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.72rem; color: #94a3b8;">System Monitoring</p>
+	<h2 style="margin: 0 0 12px; font-size: 2.2rem; line-height: 1.2;">Modern desktop dashboards with lightweight agents</h2>
+	<p style="margin: 0 auto; max-width: 640px; color: #cbd5f5; font-size: 1.05rem;">Install the agent on any server, connect with the GUI, and monitor in real time.</p>
+	<div style="margin: 20px auto 0; display: inline-flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+		<a href="#agent-install" style="padding: 10px 18px; border-radius: 999px; background: #3b82f6; color: #ffffff; text-decoration: none; font-weight: 600;">Install Agent</a>
+		<a href="#desktop-gui" style="padding: 10px 18px; border-radius: 999px; border: 1px solid #3b82f6; color: #3b82f6; text-decoration: none; font-weight: 600;">Get Desktop GUI</a>
+	</div>
 </div>
 
 ![Chowkidar Desktop](assets/dashboard-placeholder.png)
 
 ## Install
 
-### Agent (single curl command)
+### <span id="agent-install"></span>Agent (single curl command)
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/ahsantahseen/Chowkidar/main/scripts/install-agent.sh | bash
@@ -27,7 +31,7 @@ Run it:
 chowkidar-agent
 ```
 
-### Desktop GUI
+### <span id="desktop-gui"></span>Desktop GUI
 
 **macOS**
 
