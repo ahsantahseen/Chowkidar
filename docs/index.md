@@ -62,7 +62,7 @@ curl http://localhost:8080/auth/token
 
 ![Servers list](assets/servers-placeholder.png)
 
-![Dashboard](assets/dashboard-placeholder.png)
+![Dashboard](assets/dashboard-details-cpu.png)
 
 ## Support
 
