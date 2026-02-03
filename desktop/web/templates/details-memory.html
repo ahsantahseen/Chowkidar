@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Details - Chowkidar</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/details.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="logo">⚙️ Chowkidar</h1>
+                <p class="subtitle">Memory Details</p>
+            </div>
+            <a href="/" class="btn-back">← Back to Dashboard</a>
+        </header>
+
+        <!-- Main Content -->
+        <main class="details-main">
+            <!-- Current Memory Status -->
+            <section class="details-section">
+                <h2>Current Memory Status</h2>
+                <div class="metrics-container">
+                    <div class="metric-item">
+                        <label>Usage</label>
+                        <div class="value-large" id="memUsage">--</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="memProgressBar"></div>
+                        </div>
+                    </div>
+                    <div class="metric-item">
+                        <label>Used</label>
+                        <div class="value-large" id="memUsed">-- GB</div>
+                    </div>
+                    <div class="metric-item">
+                        <label>Available</label>
+                        <div class="value-large" id="memAvailable">-- GB</div>
+                    </div>
+                    <div class="metric-item">
+                        <label>Total</label>
+                        <div class="value-large" id="memTotal">-- GB</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Memory Breakdown Pie Chart -->
+            <section class="details-section">
+                <h2>Memory Breakdown</h2>
+                <div class="chart-medium">
+                    <canvas id="memoryBreakdownChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Memory Usage Trend -->
+            <section class="details-section">
+                <h2>Memory Usage Trend (24 Hours)</h2>
+                <div class="chart-large">
+                    <canvas id="memoryDetailChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Top Memory Processes -->
+            <section class="details-section">
+                <h2>Top Processes by Memory</h2>
+                <table class="details-table">
+                    <thead>
+                        <tr>
+                            <th>Process</th>
+                            <th>PID</th>
+                            <th>Memory %</th>
+                            <th>CPU %</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topProcessesTable"></tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <script src="/static/js/base-url.js"></script>
+    <script src="/static/js/details-memory.js"></script>
+</body>
+
+</html>

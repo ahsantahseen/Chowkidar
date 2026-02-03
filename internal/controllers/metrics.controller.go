@@ -26,6 +26,25 @@ func GetCPU(c *gin.Context) {
 	c.JSON(http.StatusOK, cpu)
 }
 
+func GetCPUInfo(c *gin.Context) {
+	cpuInfo, err := services.GetCPUInfo()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, cpuInfo)
+}
+
+func GetCPUCompatibility(c *gin.Context) {
+	cpuInfo, err := services.GetCPUInfo()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	compatibility := services.GetSoftwareCompatibility(cpuInfo)
+	c.JSON(http.StatusOK, compatibility)
+}
+
 func GetMemory(c *gin.Context) {
 	memory, err := services.GetCachedMemory()
 	if err != nil {

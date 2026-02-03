@@ -17,7 +17,7 @@ type HistoryCollector struct {
 	lastNetworkSent uint64
 	lastNetworkRecv uint64
 	lastTime        time.Time
-	maxDataPoints   int // Keep only this many points (e.g., 600 for 10min at 1sec interval)
+	maxDataPoints   int // Keep only this many points (e.g., 60 for 1h at 1min interval)
 	running         bool
 }
 
@@ -26,7 +26,7 @@ var historyCollector = &HistoryCollector{
 	memoryHistory:  []models.MemoryHistory{},
 	diskHistory:    []models.DiskHistory{},
 	networkHistory: []models.NetworkHistory{},
-	maxDataPoints:  600, // 10 minutes at 1-second intervals
+	maxDataPoints:  60, // Keep 1 hour of data (60 points at 1-minute intervals)
 	lastTime:       time.Now(),
 	running:        false,
 }
@@ -62,15 +62,23 @@ func StopHistoryCollector() {
 }
 
 // collectSnapshot takes a snapshot of all metrics
+// Key optimization: System calls are done OUTSIDE the lock to prevent blocking reader goroutines
 func (hc *HistoryCollector) collectSnapshot() {
+	now := time.Now()
+
+	// Call all system functions OUTSIDE the lock
+	// These can take 100-500ms, and we don't want to block readers
+	cpu, cpuErr := GetCPUUsage()
+	memory, memErr := GetMemoryUsage()
+	disk, diskErr := GetDiskUsage("/")
+	network, netErr := GetNetworkUsage()
+
+	// Now acquire lock only for the quick append operations
 	hc.mu.Lock()
 	defer hc.mu.Unlock()
 
-	now := time.Now()
-
 	// CPU
-	cpu, err := GetCPUUsage()
-	if err == nil {
+	if cpuErr == nil {
 		hc.cpuHistory = append(hc.cpuHistory, models.CPUHistory{
 			Timestamp: now,
 			Usage:     cpu.UsagePercent,
@@ -82,8 +90,7 @@ func (hc *HistoryCollector) collectSnapshot() {
 	}
 
 	// Memory
-	memory, err := GetMemoryUsage()
-	if err == nil {
+	if memErr == nil {
 		hc.memoryHistory = append(hc.memoryHistory, models.MemoryHistory{
 			Timestamp:    now,
 			UsedGB:       memory.UsedGB,
@@ -96,8 +103,7 @@ func (hc *HistoryCollector) collectSnapshot() {
 	}
 
 	// Disk
-	disk, err := GetDiskUsage("/")
-	if err == nil {
+	if diskErr == nil {
 		hc.diskHistory = append(hc.diskHistory, models.DiskHistory{
 			Timestamp:    now,
 			UsedGB:       disk.UsedGB,
@@ -110,8 +116,7 @@ func (hc *HistoryCollector) collectSnapshot() {
 	}
 
 	// Network (with throughput calculation)
-	network, err := GetNetworkUsage()
-	if err == nil && len(network) > 0 {
+	if netErr == nil && len(network) > 0 {
 		totalSent := uint64(0)
 		totalRecv := uint64(0)
 		for _, iface := range network {

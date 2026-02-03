@@ -17,11 +17,20 @@ type MetricsCache struct {
 	diskCacheTime    time.Time
 	networkCache     []models.NetworkStatus
 	networkCacheTime time.Time
-	ttl              time.Duration
+	lastNetworkBytes struct {
+		sent uint64
+		recv uint64
+		time time.Time
+	}
+	directoriesCache     []models.DirectoryInfo
+	directoriesCacheTime time.Time
+	directoriesCacheTTL  time.Duration // Longer TTL for directories (default 30 seconds)
+	ttl                  time.Duration
 }
 
 var metricsCache = &MetricsCache{
-	ttl: 1 * time.Second, // Cache for 1 second
+	ttl:                 1 * time.Second,  // Cache for 1 second
+	directoriesCacheTTL: 30 * time.Second, // Cache directories for 30 seconds (slower operation)
 }
 
 // SetCacheTTL sets the cache time-to-live
@@ -132,6 +141,58 @@ func GetCachedNetwork() ([]models.NetworkStatus, error) {
 	return network, nil
 }
 
+// GetNetworkRates calculates real-time network send/receive rates in bytes/sec
+func GetNetworkRates() (sentRate, recvRate float64) {
+	metricsCache.mu.Lock()
+	defer metricsCache.mu.Unlock()
+
+	if metricsCache.networkCache == nil || len(metricsCache.networkCache) == 0 {
+		return 0, 0
+	}
+
+	// Calculate total bytes
+	totalSent := uint64(0)
+	totalRecv := uint64(0)
+	for _, iface := range metricsCache.networkCache {
+		totalSent += iface.BytesSent
+		totalRecv += iface.BytesRecv
+	}
+
+	// Calculate rates based on previous snapshot
+	if metricsCache.lastNetworkBytes.time.IsZero() {
+		// First call, just store values
+		metricsCache.lastNetworkBytes.sent = totalSent
+		metricsCache.lastNetworkBytes.recv = totalRecv
+		metricsCache.lastNetworkBytes.time = time.Now()
+		return 0, 0
+	}
+
+	// Calculate time delta
+	timeDelta := time.Since(metricsCache.lastNetworkBytes.time).Seconds()
+	if timeDelta <= 0 {
+		timeDelta = 1
+	}
+
+	// Calculate rates
+	sentRate = float64(totalSent-metricsCache.lastNetworkBytes.sent) / timeDelta
+	recvRate = float64(totalRecv-metricsCache.lastNetworkBytes.recv) / timeDelta
+
+	// Update stored values
+	metricsCache.lastNetworkBytes.sent = totalSent
+	metricsCache.lastNetworkBytes.recv = totalRecv
+	metricsCache.lastNetworkBytes.time = time.Now()
+
+	// Prevent negative rates (in case of counter reset)
+	if sentRate < 0 {
+		sentRate = 0
+	}
+	if recvRate < 0 {
+		recvRate = 0
+	}
+
+	return sentRate, recvRate
+}
+
 // ClearCache clears all cached values
 func ClearCache() {
 	metricsCache.mu.Lock()
@@ -141,4 +202,38 @@ func ClearCache() {
 	metricsCache.memoryCache = nil
 	metricsCache.diskCache = nil
 	metricsCache.networkCache = nil
+	metricsCache.directoriesCache = nil
+}
+
+// GetCachedDirectories returns cached top directories if valid, otherwise fetches fresh
+func GetCachedDirectories(path string, limit int) ([]models.DirectoryInfo, error) {
+	metricsCache.mu.RLock()
+	// Check if cache is valid (using longer TTL for directories)
+	isCacheDirValid := time.Since(metricsCache.directoriesCacheTime) < metricsCache.directoriesCacheTTL && metricsCache.directoriesCache != nil
+	if isCacheDirValid && path == "" {
+		defer metricsCache.mu.RUnlock()
+		// Limit results
+		dirs := metricsCache.directoriesCache
+		if len(dirs) > limit {
+			dirs = dirs[:limit]
+		}
+		return dirs, nil
+	}
+	metricsCache.mu.RUnlock()
+
+	// Fetch fresh data
+	dirs, err := GetTopDirectories(path, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	// Update cache only for default path
+	if path == "" {
+		metricsCache.mu.Lock()
+		metricsCache.directoriesCache = dirs
+		metricsCache.directoriesCacheTime = time.Now()
+		metricsCache.mu.Unlock()
+	}
+
+	return dirs, nil
 }

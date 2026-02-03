@@ -1,1 +1,35 @@
+# Binaries
 chowkidar
+chowkidar-setup
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Configuration
+config/
+config/users.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+/tmp/
+
+# Runtime data
+*.sqlite
+*.db
+*.pid
+*.cache
+*.tmp
+
+# Go build cache
+.cache/
+
+node_modules

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Details - Chowkidar</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/details.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="logo">⚙️ Chowkidar</h1>
+                <p class="subtitle">Network Details</p>
+            </div>
+            <a href="/" class="btn-back">← Back to Dashboard</a>
+        </header>
+
+        <!-- Main Content -->
+        <main class="details-main">
+            <!-- Current Network Status with Spinners -->
+            <section class="details-section">
+                <h2>Current Network Status</h2>
+                <div class="network-spinners-container">
+                    <!-- Upload Spinner (Red) -->
+                    <div class="spinner-card">
+                        <div class="spinner-label">📤 Upload</div>
+                        <div class="spinner-wrapper">
+                            <svg class="spinner" viewBox="0 0 120 120">
+                                <circle class="spinner-bg" cx="60" cy="60" r="50" />
+                                <circle class="spinner-fill" id="uploadSpinner" cx="60" cy="60" r="50"
+                                    style="--percentage: 0" />
+                            </svg>
+                            <div class="spinner-value" id="uploadRate">-- MB/s</div>
+                        </div>
+                        <div class="spinner-total">Total: <span id="totalSent">-- GB</span></div>
+                    </div>
+
+                    <!-- Download Spinner (Green) -->
+                    <div class="spinner-card">
+                        <div class="spinner-label">📥 Download</div>
+                        <div class="spinner-wrapper">
+                            <svg class="spinner" viewBox="0 0 120 120">
+                                <circle class="spinner-bg" cx="60" cy="60" r="50" />
+                                <circle class="spinner-fill" id="downloadSpinner" cx="60" cy="60" r="50"
+                                    style="--percentage: 0" />
+                            </svg>
+                            <div class="spinner-value" id="downloadRate">-- MB/s</div>
+                        </div>
+                        <div class="spinner-total">Total: <span id="totalRecv">-- GB</span></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Network Throughput Chart -->
+            <section class="details-section">
+                <h2>Network Throughput (24 Hours)</h2>
+                <div class="chart-large">
+                    <canvas id="networkDetailChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Network Interfaces -->
+            <section class="details-section">
+                <h2>Network Interfaces</h2>
+                <table id="interfacesTable" class="details-table">
+                    <thead>
+                        <tr>
+                            <th>Interface</th>
+                            <th>Bytes Sent</th>
+                            <th>Bytes Recv</th>
+                            <th>Packets Sent</th>
+                            <th>Packets Recv</th>
+                            <th>Errors</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <script src="/static/js/base-url.js"></script>
+    <script src="/static/js/details-network.js"></script>
+</body>
+
+</html>

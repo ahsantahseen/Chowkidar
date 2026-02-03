@@ -53,7 +53,7 @@ func GetAllHistory(c *gin.Context) {
 }
 
 // GetDashboard returns simplified data for the main dashboard
-// Includes current status + recent history (last 5 minutes)
+// Includes current status + recent history (last 2 minutes for faster response)
 func GetDashboard(c *gin.Context) {
 	// Get current metrics from cache
 	cpuCurrent, _ := services.GetCachedCPU()
@@ -62,8 +62,8 @@ func GetDashboard(c *gin.Context) {
 	networkCurrent, _ := services.GetCachedNetwork()
 	processesCurrent, totalCPU, totalMem, _ := services.GetCachedProcesses()
 
-	// Get last 5 minutes of history
-	window := services.GetAllHistoricalData(5 * time.Minute)
+	// Get all available history (backend now limits to 20 points max for real-time performance)
+	window := services.GetAllHistoricalData(10 * time.Minute)
 
 	// Process top 5 processes
 	topProcesses := processesCurrent
@@ -71,7 +71,7 @@ func GetDashboard(c *gin.Context) {
 		topProcesses = topProcesses[:5]
 	}
 
-	// Calculate network totals and get latest rates
+	// Calculate network totals and get rates (from real-time calculation, not history)
 	totalNetworkSent := uint64(0)
 	totalNetworkRecv := uint64(0)
 	var sentRate float64 = 0.0
@@ -84,12 +84,14 @@ func GetDashboard(c *gin.Context) {
 		}
 	}
 
-	// Get latest rates from history (with defaults)
-	if len(window.Network) > 0 {
-		latestNetwork := window.Network[len(window.Network)-1]
-		sentRate = latestNetwork.BytesSentRate
-		recvRate = latestNetwork.BytesRecvRate
-	}
+	// Get real-time network rates (not from history)
+	sentRate, recvRate = services.GetNetworkRates()
+
+	// Get all disk partitions
+	allDisks, _ := services.GetAllDiskUsage()
+
+	// Get top 5 largest directories from home directory (with caching)
+	topDirs, _ := services.GetCachedDirectories("", 5)
 
 	dashboard := gin.H{
 		"current": gin.H{
@@ -119,8 +121,10 @@ func GetDashboard(c *gin.Context) {
 				"total_mem": totalMem,
 			},
 		},
-		"history":   window,
-		"timestamp": time.Now(),
+		"disk_partitions": allDisks,
+		"top_directories": topDirs,
+		"history":         window,
+		"timestamp":       time.Now(),
 	}
 
 	c.JSON(http.StatusOK, dashboard)

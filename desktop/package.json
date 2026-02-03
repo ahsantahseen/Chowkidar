@@ -1,0 +1,51 @@
+{
+  "name": "chowkidar-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "node scripts/validate-config.js",
+    "db:smoke": "node scripts/db-smoke.js",
+    "postinstall": "electron-rebuild -f -w better-sqlite3",
+    "rebuild:sqlite": "electron-rebuild -f -w better-sqlite3",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "dependencies": {
+    "electron": "^30.0.8",
+    "better-sqlite3": "^9.6.0",
+    "electron-log": "^5.1.2",
+    "electron-updater": "^6.2.1"
+  },
+  "devDependencies": {
+    "electron-builder": "^24.13.3",
+    "electron-rebuild": "^3.2.9"
+  },
+  "build": {
+    "appId": "com.chowkidar.desktop",
+    "productName": "Chowkidar",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "db.js",
+      "main.js",
+      "preload.js",
+      "config.json",
+      "scripts/**/*",
+      "web/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.utilities"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ]
+    }
+  }
+}
