@@ -10,7 +10,7 @@ title: Chowkidar
 	<p style="margin: 0; color: #c9cbd4;">Desktop GUI + lightweight agents for servers everywhere.</p>
 </div>
 
-![Chowkidar Desktop](assets/chowkidar-dashboard.png)
+![Chowkidar Desktop](assets/dashboard-placeholder.png)
 
 ## Install
 
