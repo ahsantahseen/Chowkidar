@@ -29,13 +29,18 @@ fetch_asset_url() {
     API_URL="$API_URL" ASSET_PRIMARY="$ASSET_PREFIX_PRIMARY" ASSET_FALLBACK="$ASSET_PREFIX_FALLBACK" python3 - <<'PY'
 import json
 import os
+import urllib.error
 import urllib.request
 
 api_url = os.environ["API_URL"]
 asset_primary = os.environ["ASSET_PRIMARY"]
 asset_fallback = os.environ["ASSET_FALLBACK"]
-with urllib.request.urlopen(api_url) as response:
+try:
+  with urllib.request.urlopen(api_url) as response:
     data = json.load(response)
+except (urllib.error.HTTPError, urllib.error.URLError):
+  print("")
+  raise SystemExit(0)
 assets = data.get("assets", [])
 matches = []
 for asset in assets:
@@ -54,13 +59,18 @@ PY
     API_URL="$API_URL" ASSET_PRIMARY="$ASSET_PREFIX_PRIMARY" ASSET_FALLBACK="$ASSET_PREFIX_FALLBACK" python - <<'PY'
 import json
 import os
+import urllib.error
 import urllib.request
 
 api_url = os.environ["API_URL"]
 asset_primary = os.environ["ASSET_PRIMARY"]
 asset_fallback = os.environ["ASSET_FALLBACK"]
-with urllib.request.urlopen(api_url) as response:
+try:
+  with urllib.request.urlopen(api_url) as response:
     data = json.load(response)
+except (urllib.error.HTTPError, urllib.error.URLError):
+  print("")
+  raise SystemExit(0)
 assets = data.get("assets", [])
 matches = []
 for asset in assets:
