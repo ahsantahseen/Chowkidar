@@ -7,6 +7,14 @@ A lightweight monitoring stack with a desktop GUI and deployable agents for your
 - **Agent**: runs on each server and streams metrics.
 - **Desktop GUI**: connect to agents and visualize metrics.
 
+## Screenshots
+
+<p align="center">
+  <img src="docs/assets/servers-placeholder.png" width="32%" alt="Servers" />
+  <img src="docs/assets/dashboard-placeholder.png" width="32%" alt="Dashboard" />
+  <img src="docs/assets/dashboard-details-cpu.png" width="32%" alt="Details" />
+</p>
+
 ## Install
 
 ### Agent (single curl command)
