@@ -3,10 +3,8 @@ layout: default
 title: Chowkidar
 ---
 
-# Chowkidar
-
 <div style="margin: 36px 0 32px; text-align: center;">
-	<p style="margin: 0 0 10px; text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.72rem; color: #94a3b8;">System Monitoring</p>
+	<h1 style="margin: 0 0 10px; text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.72rem; color: #94a3b8;">System Monitoring</h1>
 	<h2 style="margin: 0 0 12px; font-size: 2.2rem; line-height: 1.2;">Modern desktop dashboards with lightweight agents</h2>
 	<p style="margin: 0 auto; max-width: 640px; color: #cbd5f5; font-size: 1.05rem;">Install the agent on any server, connect with the GUI, and monitor in real time.</p>
 	<div style="margin: 20px auto 0; display: inline-flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
