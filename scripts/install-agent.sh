@@ -32,20 +32,20 @@ import os
 import urllib.request
 
 api_url = os.environ["API_URL"]
-  asset_primary = os.environ["ASSET_PRIMARY"]
-  asset_fallback = os.environ["ASSET_FALLBACK"]
+asset_primary = os.environ["ASSET_PRIMARY"]
+asset_fallback = os.environ["ASSET_FALLBACK"]
 with urllib.request.urlopen(api_url) as response:
     data = json.load(response)
 assets = data.get("assets", [])
-  matches = []
+matches = []
 for asset in assets:
     name = asset.get("name", "")
     if name.startswith(asset_primary):
-      print(asset.get("browser_download_url", ""))
-      raise SystemExit(0)
+        print(asset.get("browser_download_url", ""))
+        raise SystemExit(0)
     if name.startswith(asset_fallback):
-      matches.append(asset.get("browser_download_url", ""))
-  if matches:
+        matches.append(asset.get("browser_download_url", ""))
+if matches:
     print(matches[0])
     raise SystemExit(0)
 print("")
@@ -57,20 +57,20 @@ import os
 import urllib.request
 
 api_url = os.environ["API_URL"]
-  asset_primary = os.environ["ASSET_PRIMARY"]
-  asset_fallback = os.environ["ASSET_FALLBACK"]
+asset_primary = os.environ["ASSET_PRIMARY"]
+asset_fallback = os.environ["ASSET_FALLBACK"]
 with urllib.request.urlopen(api_url) as response:
     data = json.load(response)
 assets = data.get("assets", [])
-  matches = []
+matches = []
 for asset in assets:
     name = asset.get("name", "")
     if name.startswith(asset_primary):
-      print(asset.get("browser_download_url", ""))
-      raise SystemExit(0)
+        print(asset.get("browser_download_url", ""))
+        raise SystemExit(0)
     if name.startswith(asset_fallback):
-      matches.append(asset.get("browser_download_url", ""))
-  if matches:
+        matches.append(asset.get("browser_download_url", ""))
+if matches:
     print(matches[0])
     raise SystemExit(0)
 print("")
@@ -81,7 +81,7 @@ PY
 URL=$(fetch_asset_url)
 
 if [[ -z "$URL" ]]; then
-  echo "No release asset found for ${ASSET_PREFIX}."
+  echo "No release asset found for ${ASSET_PREFIX_PRIMARY} or ${ASSET_PREFIX_FALLBACK}."
   echo "Falling back to build from source (requires git + Go)."
   TMP_DIR=$(mktemp -d)
   git clone --depth=1 "https://github.com/${REPO}.git" "$TMP_DIR"
@@ -97,7 +97,7 @@ if [[ -z "$URL" ]]; then
   popd >/dev/null
   rm -rf "$TMP_DIR"
 else
-  echo "Downloading ${ASSET_PREFIX}..."
+  echo "Downloading ${ASSET_PREFIX_PRIMARY} (or fallback)..."
   mkdir -p "$INSTALL_DIR"
   curl -fsSL "$URL" -o "$INSTALL_DIR/$BINARY_NAME"
   chmod +x "$INSTALL_DIR/$BINARY_NAME"
