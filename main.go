@@ -24,7 +24,7 @@ func main() {
 	// ============================================================
 	// Initialize auth service (generates JWT tokens)
 	secretKey := os.Getenv("CHOWKIDAR_SECRET_KEY")
-	_ = services.InitAuthService(secretKey, 7*24*time.Hour)
+	_ = services.InitAuthService(secretKey, 365*24*time.Hour)
 	log.Println("✓ Auth service initialized")
 
 	// Initialize WebSocket hub for real-time stats
@@ -76,18 +76,6 @@ func main() {
 		log.Println(token)
 		return
 	}
-	go func() {
-		ticker := time.NewTicker(7 * 24 * time.Hour)
-		defer ticker.Stop()
-		for range ticker.C {
-			rotated, err := services.GenerateToken("chowkidar-agent")
-			if err != nil {
-				log.Printf("Failed to rotate token: %v", err)
-				continue
-			}
-			log.Printf("Rotated token: %s", rotated[:20]+"...")
-		}
-	}()
 	log.Printf("\n"+
 		"=====================================\n"+
 		"🔐 Server Token Generated\n"+
