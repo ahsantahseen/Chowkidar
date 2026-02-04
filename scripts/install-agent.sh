@@ -92,20 +92,8 @@ URL=$(fetch_asset_url)
 
 if [[ -z "$URL" ]]; then
   echo "No release asset found for ${ASSET_PREFIX_PRIMARY} or ${ASSET_PREFIX_FALLBACK}."
-  echo "Falling back to build from source (requires git + Go)."
-  TMP_DIR=$(mktemp -d)
-  git clone --depth=1 "https://github.com/${REPO}.git" "$TMP_DIR"
-  pushd "$TMP_DIR" >/dev/null
-  if ! command -v go >/dev/null 2>&1; then
-    echo "Go is required to build from source."
-    exit 1
-  fi
-  go build -o chowkidar ./main.go
-  mkdir -p "$INSTALL_DIR"
-  cp ./chowkidar "$INSTALL_DIR/$BINARY_NAME"
-  chmod +x "$INSTALL_DIR/$BINARY_NAME"
-  popd >/dev/null
-  rm -rf "$TMP_DIR"
+  echo "Publish a GitHub Release with agent binaries, then retry."
+  exit 1
 else
   echo "Downloading ${ASSET_PREFIX_PRIMARY} (or fallback)..."
   mkdir -p "$INSTALL_DIR"

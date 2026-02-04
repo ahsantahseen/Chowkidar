@@ -6,8 +6,14 @@ OUT="${OUT:-$HOME/Downloads/Chowkidar.AppImage}"
 
 API_URL="https://api.github.com/repos/${REPO}/releases/latest"
 
+API_JSON=$(curl -fsSL "$API_URL" 2>/dev/null || true)
+if [[ -z "$API_JSON" ]]; then
+  echo "No release metadata found. Publish a GitHub Release, then retry."
+  exit 1
+fi
+
 if command -v python3 >/dev/null 2>&1; then
-  URL=$(curl -fsSL "$API_URL" | python3 - <<'PY'
+  URL=$(printf "%s" "$API_JSON" | python3 - <<'PY'
 import json, sys
 
 data = json.load(sys.stdin)
@@ -24,7 +30,7 @@ for asset in assets:
 PY
   )
 else
-  URL=$(curl -fsSL "$API_URL" | python - <<'PY'
+  URL=$(printf "%s" "$API_JSON" | python - <<'PY'
 import json, sys
 
 data = json.load(sys.stdin)
