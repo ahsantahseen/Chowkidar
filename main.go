@@ -5,6 +5,7 @@ import (
 	"chowkidar/internal/middleware"
 	"chowkidar/internal/routes"
 	"chowkidar/internal/services"
+	"flag"
 	"log"
 	"net"
 	"os"
@@ -15,12 +16,15 @@ import (
 )
 
 func main() {
+	printTokenOnly := flag.Bool("print-token", false, "print a token and exit")
+	flag.Parse()
+
 	// ============================================================
 	// Initialize Services
 	// ============================================================
 	// Initialize auth service (generates JWT tokens)
 	secretKey := os.Getenv("CHOWKIDAR_SECRET_KEY")
-	_ = services.InitAuthService(secretKey, 90*24*time.Hour)
+	_ = services.InitAuthService(secretKey, 7*24*time.Hour)
 	log.Println("✓ Auth service initialized")
 
 	// Initialize WebSocket hub for real-time stats
@@ -68,6 +72,22 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to generate token: %v", err)
 	}
+	if *printTokenOnly {
+		log.Println(token)
+		return
+	}
+	go func() {
+		ticker := time.NewTicker(7 * 24 * time.Hour)
+		defer ticker.Stop()
+		for range ticker.C {
+			rotated, err := services.GenerateToken("chowkidar-agent")
+			if err != nil {
+				log.Printf("Failed to rotate token: %v", err)
+				continue
+			}
+			log.Printf("Rotated token: %s", rotated[:20]+"...")
+		}
+	}()
 	log.Printf("\n"+
 		"=====================================\n"+
 		"🔐 Server Token Generated\n"+
@@ -123,7 +143,6 @@ func main() {
 	authRoutes := r.Group("/auth")
 	authRoutes.Use(middleware.TokenRateLimitMiddleware(tokenRateLimiter))
 	{
-		authRoutes.GET("/token", controllers.HandleGetToken)
 		authRoutes.GET("/status", controllers.HandleTokenStatus)
 	}
 
