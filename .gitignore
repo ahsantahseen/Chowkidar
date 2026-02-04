@@ -33,5 +33,9 @@ config/users.json
 .cache/
 
 node_modules
-/dist
+
+/build
+/builds
 /desktop/dist
+/desktop/build
+/desktop/builds
