@@ -33,3 +33,5 @@ config/users.json
 .cache/
 
 node_modules
+/dist
+/desktop/dist
