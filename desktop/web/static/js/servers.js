@@ -105,6 +105,24 @@ class ServerManager {
     }
   }
 
+  async tryGenerateToken(serverUrl) {
+    if (!serverUrl) return null;
+    try {
+      const response = await this.fetchWithTimeout(
+        `${serverUrl}/auth/token`,
+        5000,
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      const data = await response.json();
+      return data?.token || null;
+    } catch (error) {
+      console.warn("Token auto-generation failed for", serverUrl, error);
+      return null;
+    }
+  }
+
   async bootstrap() {
     await this.loadServers();
     this.initializeUI();
@@ -175,12 +193,16 @@ class ServerManager {
 
     const normalizedGroup = this.normalizeGroup(group);
     const normalizedTags = this.normalizeTags(tags);
+    let resolvedToken = token?.trim() || null;
+    if (!resolvedToken) {
+      resolvedToken = await this.tryGenerateToken(trimmedUrl);
+    }
 
     if (window.desktopAPI?.createServer) {
       const created = await window.desktopAPI.createServer({
         name: trimmedName,
         url: trimmedUrl,
-        token,
+        token: resolvedToken,
         group: normalizedGroup,
         tags: this.formatTags(normalizedTags),
       });
@@ -189,6 +211,7 @@ class ServerManager {
           ...created,
           group: normalizedGroup,
           tags: normalizedTags,
+          token: created.token ?? resolvedToken,
           status: "offline",
           lastError: "",
           lastSeenAt: null,
@@ -209,7 +232,7 @@ class ServerManager {
       id,
       name: trimmedName,
       url: trimmedUrl,
-      token,
+      token: resolvedToken,
       group: normalizedGroup,
       tags: normalizedTags,
       sortOrder: maxOrder + 1,
@@ -254,8 +277,14 @@ class ServerManager {
       this.renderServersList();
 
       if (this.currentServer && this.currentServer.id === id) {
-        document.getElementById("serverName").textContent = trimmedName;
-        document.getElementById("serverUrl").textContent = trimmedUrl;
+        const nameLabel = document.getElementById("serverName");
+        const urlLabel = document.getElementById("serverUrl");
+        if (nameLabel) {
+          nameLabel.textContent = trimmedName;
+        }
+        if (urlLabel) {
+          urlLabel.textContent = trimmedUrl;
+        }
         const ipLabel = document.getElementById("serverIp");
         if (ipLabel) {
           ipLabel.textContent = this.extractHost(trimmedUrl);
@@ -275,8 +304,14 @@ class ServerManager {
       this.renderServersList();
 
       if (this.currentServer && this.currentServer.id === id) {
-        document.getElementById("serverName").textContent = trimmedName;
-        document.getElementById("serverUrl").textContent = trimmedUrl;
+        const nameLabel = document.getElementById("serverName");
+        const urlLabel = document.getElementById("serverUrl");
+        if (nameLabel) {
+          nameLabel.textContent = trimmedName;
+        }
+        if (urlLabel) {
+          urlLabel.textContent = trimmedUrl;
+        }
         const ipLabel = document.getElementById("serverIp");
         if (ipLabel) {
           ipLabel.textContent = this.extractHost(trimmedUrl);
@@ -287,7 +322,7 @@ class ServerManager {
 
   // Delete server
   async deleteServer(id) {
-    const index = this.servers.findIndex((s) => s.id === id);
+    const index = this.servers.findIndex((s) => String(s.id) === String(id));
     if (index > -1) {
       this.disconnectServer(id);
 
@@ -328,15 +363,11 @@ class ServerManager {
     let token = server.token;
     if (!token) {
       try {
-        const response = await fetch(`${server.url}/auth/token`);
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        const generatedToken = await this.tryGenerateToken(server.url);
+        if (!generatedToken) {
+          throw new Error("Failed to auto-generate token");
         }
-        const data = await response.json();
-        token = data.token;
-        if (!token) {
-          throw new Error("No token in response");
-        }
+        token = generatedToken;
         server.token = token;
         this.saveServers();
         console.log("✓ Got token for server:", server.name);
@@ -349,8 +380,14 @@ class ServerManager {
     }
 
     // Update UI
-    document.getElementById("serverName").textContent = server.name;
-    document.getElementById("serverUrl").textContent = server.url;
+    const nameLabel = document.getElementById("serverName");
+    const urlLabel = document.getElementById("serverUrl");
+    if (nameLabel) {
+      nameLabel.textContent = server.name;
+    }
+    if (urlLabel) {
+      urlLabel.textContent = server.url;
+    }
     const ipLabel = document.getElementById("serverIp");
     if (ipLabel) {
       ipLabel.textContent = this.extractHost(server.url);
@@ -1074,6 +1111,7 @@ class ServerManager {
   // Render servers list
   renderServersList() {
     const list = document.getElementById("serversList");
+    if (!list) return;
     list.innerHTML = "";
 
     this.updateMiniStats();
@@ -1184,6 +1222,7 @@ class ServerManager {
   // Render dashboard
   renderDashboard() {
     const content = document.getElementById("dashboardContent");
+    if (!content) return;
 
     if (!this.currentServer) {
       content.innerHTML =
@@ -1330,13 +1369,20 @@ class ServerManager {
         addForm.reset();
 
         if (newId) {
-          this.connectServer(newId)
-            .then(() => {
-              this.renderServersList();
-            })
-            .catch((err) => {
-              console.error("Failed to connect to new server:", err);
-            });
+          const createdServer = this.servers.find(
+            (server) => String(server.id) === String(newId),
+          );
+          if (createdServer?.token) {
+            this.connectServer(newId)
+              .then(() => {
+                this.renderServersList();
+              })
+              .catch((err) => {
+                console.error("Failed to connect to new server:", err);
+              });
+          } else {
+            this.renderServersList();
+          }
         }
       } catch (error) {
         console.error("Error adding server:", error);
@@ -1394,6 +1440,10 @@ window.handleAddServerSubmit = async function handleAddServerSubmit(event) {
     return false;
   }
 
+  if (window.serverManager.isReady) {
+    return false;
+  }
+
   const name = document.getElementById("serverNameInput").value;
   const url = document.getElementById("serverHostInput").value;
   const token = document.getElementById("serverTokenInput").value || null;
@@ -1409,7 +1459,7 @@ window.handleAddServerSubmit = async function handleAddServerSubmit(event) {
     await window.serverManager.addServer(name, url, token, group, tags);
     document.getElementById("addServerModal").classList.remove("active");
     document.getElementById("addServerForm").reset();
-    window.serverManager.renderDashboard();
+    window.serverManager.renderServersList?.();
   } catch (error) {
     console.error("Error adding server:", error);
     alert("Error adding server: " + error.message);
