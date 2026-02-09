@@ -31,6 +31,12 @@ curl -fsSL https://raw.githubusercontent.com/ahsantahseen/Chowkidar/main/scripts
 
 The installer will prompt for the port (defaults to 8080).
 
+You can also pass a port flag:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/ahsantahseen/Chowkidar/main/scripts/install-agent-service.sh | sudo bash -s -- --port 9090
+```
+
 ### Remove agent systemd service (Linux)
 
 ```bash

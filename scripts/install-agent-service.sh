@@ -13,6 +13,23 @@ if [[ "$EUID" -ne 0 ]]; then
   exit 1
 fi
 
+PORT_OVERRIDE=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --port)
+      PORT_OVERRIDE="${2:-}"
+      shift 2
+      ;;
+    --port=*)
+      PORT_OVERRIDE="${1#*=}"
+      shift 1
+      ;;
+    *)
+      shift 1
+      ;;
+  esac
+done
+
 OS="$(uname -s)"
 ARCH="$(uname -m)"
 
@@ -99,7 +116,9 @@ PY
 }
 
 PORT="$DEFAULT_PORT"
-if [ -t 0 ]; then
+if [[ -n "$PORT_OVERRIDE" ]]; then
+  PORT="$PORT_OVERRIDE"
+elif [ -t 0 ]; then
   if read -r -p "Enter port for Chowkidar agent [${DEFAULT_PORT}]: " INPUT_PORT </dev/tty; then
     PORT="${INPUT_PORT:-$DEFAULT_PORT}"
   fi
