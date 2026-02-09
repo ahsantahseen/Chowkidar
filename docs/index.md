@@ -29,6 +29,8 @@ curl -fsSL https://raw.githubusercontent.com/ahsantahseen/Chowkidar/main/scripts
 curl -fsSL https://raw.githubusercontent.com/ahsantahseen/Chowkidar/main/scripts/install-agent-service.sh | sudo bash
 ```
 
+The installer will prompt for the port (defaults to 8080).
+
 Run it:
 
 ```bash

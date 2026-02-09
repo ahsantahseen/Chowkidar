@@ -6,6 +6,7 @@ INSTALL_DIR="${INSTALL_DIR:-/usr/local/bin}"
 BINARY_NAME="chowkidar-agent"
 SERVICE_NAME="${SERVICE_NAME:-chowkidar-agent}"
 RELEASE_TAG="${RELEASE_TAG:-latest}"
+DEFAULT_PORT="${CHOWKIDAR_PORT:-8080}"
 
 if [[ "$EUID" -ne 0 ]]; then
   echo "This installer must be run as root. Try: sudo $0"
@@ -97,6 +98,13 @@ PY
   fi
 }
 
+read -r -p "Enter port for Chowkidar agent [${DEFAULT_PORT}]: " INPUT_PORT
+PORT="${INPUT_PORT:-$DEFAULT_PORT}"
+if ! [[ "$PORT" =~ ^[0-9]+$ ]] || [ "$PORT" -lt 1 ] || [ "$PORT" -gt 65535 ]; then
+  echo "Invalid port: $PORT"
+  exit 1
+fi
+
 URL=$(fetch_asset_url)
 
 if [[ -z "$URL" ]]; then
@@ -117,6 +125,7 @@ After=network.target
 
 [Service]
 Type=simple
+Environment=CHOWKIDAR_PORT=${PORT}
 ExecStart=${INSTALL_DIR}/${BINARY_NAME}
 Restart=on-failure
 RestartSec=5
