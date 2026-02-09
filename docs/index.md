@@ -23,6 +23,12 @@ title: Chowkidar
 curl -fsSL https://raw.githubusercontent.com/ahsantahseen/Chowkidar/main/scripts/install-agent.sh | bash
 ```
 
+### Agent (install as systemd service on Linux)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/ahsantahseen/Chowkidar/main/scripts/install-agent-service.sh | sudo bash
+```
+
 Run it:
 
 ```bash
@@ -52,16 +58,18 @@ curl -fsSL https://raw.githubusercontent.com/ahsantahseen/Chowkidar/main/scripts
 ## Connect the GUI
 
 Set the backend URL in the desktop app when prompted or via `desktop/config.json`.
+Generate a token on the agent host with `./chowkidar --print-token`, then paste
+it into the server configuration in the desktop app.
 
 Auth tokens are optional when adding a server in the desktop app. If left empty,
 the app will request a token automatically from the agent on first connect.
 
 ## Token
 
-Generate a token from the agent host:
+Generate a token on the agent host (CLI only):
 
 ```bash
-curl http://localhost:8080/auth/token
+./chowkidar --print-token
 ```
 
 ## Screenshots

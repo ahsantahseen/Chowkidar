@@ -105,24 +105,6 @@ class ServerManager {
     }
   }
 
-  async tryGenerateToken(serverUrl) {
-    if (!serverUrl) return null;
-    try {
-      const response = await this.fetchWithTimeout(
-        `${serverUrl}/auth/token`,
-        5000,
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      const data = await response.json();
-      return data?.token || null;
-    } catch (error) {
-      console.warn("Token auto-generation failed for", serverUrl, error);
-      return null;
-    }
-  }
-
   async bootstrap() {
     await this.loadServers();
     this.initializeUI();
@@ -193,10 +175,7 @@ class ServerManager {
 
     const normalizedGroup = this.normalizeGroup(group);
     const normalizedTags = this.normalizeTags(tags);
-    let resolvedToken = token?.trim() || null;
-    if (!resolvedToken) {
-      resolvedToken = await this.tryGenerateToken(trimmedUrl);
-    }
+    const resolvedToken = token?.trim() || null;
 
     if (window.desktopAPI?.createServer) {
       const created = await window.desktopAPI.createServer({
@@ -362,21 +341,12 @@ class ServerManager {
     // Get or generate token
     let token = server.token;
     if (!token) {
-      try {
-        const generatedToken = await this.tryGenerateToken(server.url);
-        if (!generatedToken) {
-          throw new Error("Failed to auto-generate token");
-        }
-        token = generatedToken;
-        server.token = token;
-        this.saveServers();
-        console.log("✓ Got token for server:", server.name);
-      } catch (e) {
-        console.error("Failed to get token from", server.url, ":", e);
-        this.updateServerStatus(id, "error", e.message);
-        alert(`Failed to connect to ${server.name}: ${e.message}`);
-        return;
-      }
+      const message =
+        "Missing token. Generate it via command and paste it into the server config.";
+      console.error("Cannot connect without token for", server.url);
+      this.updateServerStatus(id, "error", "missing token");
+      alert(`Failed to connect to ${server.name}: ${message}`);
+      return;
     }
 
     // Update UI

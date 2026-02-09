@@ -6,18 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// RegisterAuthRoutes registers all authentication and WebSocket routes
+// RegisterAuthRoutes registers WebSocket routes only.
+// Token generation/validation must be done via CLI (no HTTP endpoints).
 func RegisterAuthRoutes(r *gin.Engine) {
 	// WebSocket endpoint for real-time stats
 	r.GET("/ws", controllers.HandleWebSocket)
-
-	// Token management endpoints
-	auth := r.Group("/auth")
-	{
-		// Generate a new token
-		auth.GET("/token", controllers.HandleGetToken)
-
-		// Check token validity
-		auth.GET("/status", controllers.HandleTokenStatus)
-	}
 }

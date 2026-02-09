@@ -139,12 +139,7 @@ logs:
 token:
 	@echo "$(BLUE)Fetching authentication token...$(NC)"
 	@echo ""
-	@curl -s http://localhost:$(PORT)/auth/token 2>/dev/null | \
-		if command -v jq >/dev/null 2>&1; then \
-			jq -r '.token' ; \
-		else \
-			grep -o '"token":"[^"]*' | cut -d'"' -f4; \
-		fi
+	@./chowkidar --print-token
 	@echo ""
 	@echo "$(GREEN)✓ Token displayed above$(NC)"
 	@echo "$(YELLOW)Save this token for API/WebSocket authentication$(NC)"

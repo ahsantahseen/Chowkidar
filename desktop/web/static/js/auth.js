@@ -69,50 +69,10 @@ class AuthManager {
    * Generate a new JWT token from the server
    */
   async generateToken() {
-    try {
-      console.log(
-        "🔐 Requesting new token from server with Authorization header...",
-      );
-
-      const response = await fetch(
-        buildUrl(`/auth/token?server_name=${this.serverName}`),
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(`Token generation failed: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-
-      if (!data.token) {
-        throw new Error("No token in response");
-      }
-
-      // Store token and expiry
-      this.token = data.token;
-      this.tokenExpiry = new Date(data.expiry);
-
-      // Persist to localStorage
-      localStorage.setItem(this.storageKey, this.token);
-      localStorage.setItem(this.expiryKey, this.tokenExpiry.toISOString());
-
-      console.log(`✅ Token generated successfully`);
-      console.log(`   Expires: ${this.tokenExpiry.toLocaleString()}`);
-
-      return this.token;
-    } catch (error) {
-      console.error("❌ Error generating token:", error);
-      this.token = null;
-      this.tokenExpiry = null;
-      return null;
-    }
+    console.warn(
+      "Token generation via HTTP is disabled. Use the CLI to generate a token.",
+    );
+    return null;
   }
 
   /**
@@ -130,34 +90,16 @@ class AuthManager {
       }
     }
 
-    // Generate new token
-    return await this.generateToken();
+    // Token generation is disabled; return existing token if any
+    return this.token;
   }
 
   /**
    * Validate token with server using Authorization header
    */
   async validateToken(token) {
-    try {
-      console.log("✓ Validating token with server (Authorization: Bearer)...");
-      const response = await fetch(buildUrl(`/auth/status`), {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-      console.log(
-        "✓ Token validation response:",
-        data.valid ? "VALID" : "INVALID",
-      );
-      return data.valid === true;
-    } catch (error) {
-      console.error("Error validating token:", error);
-      return false;
-    }
+    console.warn("Token validation via HTTP is disabled.");
+    return Boolean(token);
   }
 
   /**

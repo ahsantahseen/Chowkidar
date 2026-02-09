@@ -33,7 +33,6 @@ func main() {
 
 	// Initialize security services
 	rateLimiter := middleware.NewRateLimiter()
-	tokenRateLimiter := middleware.NewTokenRateLimiter()
 	_ = middleware.NewSecurityLogger() // Initializes global security logger
 	log.Println("✓ Security middleware initialized")
 
@@ -126,13 +125,6 @@ func main() {
 	// ============================================================
 	routes.RegisterMonitorRoutes(r) // /metrics/* endpoints
 	routes.RegisterProcessRoutes(r) // /processes/* endpoints
-
-	// Auth routes with stricter rate limiting
-	authRoutes := r.Group("/auth")
-	authRoutes.Use(middleware.TokenRateLimitMiddleware(tokenRateLimiter))
-	{
-		authRoutes.GET("/status", controllers.HandleTokenStatus)
-	}
 
 	// WebSocket endpoint with rate limiting
 	r.GET("/ws", middleware.RateLimitMiddleware(rateLimiter), controllers.HandleWebSocket)
