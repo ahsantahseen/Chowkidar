@@ -53,6 +53,9 @@ curl -fsSL https://raw.githubusercontent.com/ahsantahseen/Chowkidar/main/scripts
 
 Set the backend URL in the desktop app when prompted or via `desktop/config.json`.
 
+Auth tokens are optional when adding a server in the desktop app. If left empty,
+the app will request a token automatically from the agent on first connect.
+
 ## Token
 
 Generate a token from the agent host:
@@ -276,7 +279,6 @@ chowkidar/
 │   │   └── img/
 ├── Makefile
 ├── README.md
-├── INSTALL.md
 └── ARCHITECTURE.md
 ```
 
@@ -303,7 +305,6 @@ chowkidar/
 ## Support
 
 - 📖 [Architecture Documentation](./ARCHITECTURE.md)
-- 📖 [Installation Guide](./INSTALL.md)
 - 🐛 [GitHub Issues](https://github.com/yourusername/chowkidar/issues)
 - 💬 [GitHub Discussions](https://github.com/yourusername/chowkidar/discussions)
 
