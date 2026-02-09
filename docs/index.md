@@ -80,6 +80,13 @@ Generate a token on the agent host (CLI only):
 ./chowkidar --print-token
 ```
 
+## Environment
+
+- `CHOWKIDAR_HOST` (default: `127.0.0.1`)
+- `CHOWKIDAR_PORT` (default: `8080`)
+- `CHOWKIDAR_ALLOWED_ORIGINS` (comma-separated)
+- `CHOWKIDAR_TRUSTED_PROXIES` (comma-separated IPs/CIDRs for reverse proxies)
+
 ## Screenshots
 
 ![Servers list](assets/servers-placeholder.png)

@@ -87,6 +87,23 @@ func main() {
 
 	// Initialize Gin router with default middleware (Logger + Recovery)
 	r := gin.Default()
+	trustedProxiesEnv := strings.TrimSpace(os.Getenv("CHOWKIDAR_TRUSTED_PROXIES"))
+	if trustedProxiesEnv == "" {
+		if err := r.SetTrustedProxies(nil); err != nil {
+			log.Printf("⚠️  Failed to disable trusted proxies: %v", err)
+		}
+	} else {
+		trustedProxies := []string{}
+		for _, proxy := range strings.Split(trustedProxiesEnv, ",") {
+			trimmed := strings.TrimSpace(proxy)
+			if trimmed != "" {
+				trustedProxies = append(trustedProxies, trimmed)
+			}
+		}
+		if err := r.SetTrustedProxies(trustedProxies); err != nil {
+			log.Printf("⚠️  Failed to set trusted proxies: %v", err)
+		}
+	}
 
 	// ============================================================
 	// Security Middleware

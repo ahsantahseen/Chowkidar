@@ -98,8 +98,10 @@ PY
   fi
 }
 
-read -r -p "Enter port for Chowkidar agent [${DEFAULT_PORT}]: " INPUT_PORT
-PORT="${INPUT_PORT:-$DEFAULT_PORT}"
+PORT="$DEFAULT_PORT"
+if read -r -p "Enter port for Chowkidar agent [${DEFAULT_PORT}]: " INPUT_PORT; then
+  PORT="${INPUT_PORT:-$DEFAULT_PORT}"
+fi
 if ! [[ "$PORT" =~ ^[0-9]+$ ]] || [ "$PORT" -lt 1 ] || [ "$PORT" -gt 65535 ]; then
   echo "Invalid port: $PORT"
   exit 1
