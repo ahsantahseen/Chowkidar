@@ -66,24 +66,15 @@ func main() {
 		displayHost = "localhost"
 	}
 
-	// Generate initial token
-	token, err := services.GenerateToken("chowkidar-agent")
-	if err != nil {
-		log.Fatalf("Failed to generate token: %v", err)
-	}
+	// Generate token only when explicitly requested
 	if *printTokenOnly {
+		token, err := services.GenerateToken("chowkidar-agent")
+		if err != nil {
+			log.Fatalf("Failed to generate token: %v", err)
+		}
 		log.Println(token)
 		return
 	}
-	log.Printf("\n"+
-		"=====================================\n"+
-		"🔐 Server Token Generated\n"+
-		"=====================================\n"+
-		"Token: %s\n"+
-		"Expires: %v\n"+
-		"WebSocket URL: ws://%s:%s/ws?token=%s\n"+
-		"=====================================\n",
-		token[:20]+"...", services.GetTokenExpiry(), displayHost, port, token)
 
 	// Initialize Gin router with default middleware (Logger + Recovery)
 	r := gin.Default()

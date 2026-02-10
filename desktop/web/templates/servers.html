@@ -71,12 +71,16 @@
                     <input type="text" id="serverNameInput" placeholder="e.g., Production Server" required>
                 </div>
                 <div class="form-group">
-                    <label for="serverHostInput">Server URL</label>
-                    <input type="url" id="serverHostInput" placeholder="e.g., http://192.168.1.100:8080" required>
+                    <label for="serverIpInput">Server IP / Host</label>
+                    <input type="text" id="serverIpInput" placeholder="e.g., 192.168.1.100" required>
                 </div>
                 <div class="form-group">
-                    <label for="serverTokenInput">Auth Token (optional)</label>
-                    <input type="text" id="serverTokenInput" placeholder="Paste token from CLI">
+                    <label for="serverPortInput">Port</label>
+                    <input type="number" id="serverPortInput" placeholder="e.g., 8080" min="1" max="65535" required>
+                </div>
+                <div class="form-group">
+                    <label for="serverTokenInput">Auth Token</label>
+                    <textarea id="serverTokenInput" placeholder="Paste token from CLI" required></textarea>
                 </div>
                 <div class="form-group">
                     <label for="serverGroupInput">Group (optional)</label>
@@ -107,12 +111,16 @@
                     <input type="text" id="editServerNameInput" required>
                 </div>
                 <div class="form-group">
-                    <label for="editServerHostInput">Server URL</label>
-                    <input type="url" id="editServerHostInput" required>
+                    <label for="editServerIpInput">Server IP / Host</label>
+                    <input type="text" id="editServerIpInput" required>
                 </div>
                 <div class="form-group">
-                    <label for="editServerTokenInput">Auth Token (optional)</label>
-                    <input type="text" id="editServerTokenInput" placeholder="Paste token from CLI">
+                    <label for="editServerPortInput">Port</label>
+                    <input type="number" id="editServerPortInput" min="1" max="65535" required>
+                </div>
+                <div class="form-group">
+                    <label for="editServerTokenInput">Auth Token</label>
+                    <textarea id="editServerTokenInput" placeholder="Paste token from CLI" required></textarea>
                 </div>
                 <div class="form-group">
                     <label for="editServerGroupInput">Group (optional)</label>
@@ -174,13 +182,15 @@
                     }
                     event.preventDefault();
                     const name = document.getElementById("serverNameInput").value;
-                    const url = document.getElementById("serverHostInput").value;
-                    if (!name || !url) {
+                    const host = document.getElementById("serverIpInput").value;
+                    const port = document.getElementById("serverPortInput").value;
+                    const token = document.getElementById("serverTokenInput").value;
+                    if (!name || !host || !port || !token) {
                         alert("Please fill in all required fields");
                         return;
                     }
                     window.__fallbackServers = window.__fallbackServers || [];
-                    window.__fallbackServers.push({ name,url });
+                    window.__fallbackServers.push({ name,host,port });
                     renderFallback(window.__fallbackServers);
                     addModal.classList.remove("active");
                     addForm.reset();

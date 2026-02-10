@@ -28,6 +28,46 @@ class ServerManager {
     return `http://${trimmed}`.replace(/\/$/, "");
   }
 
+  normalizeHost(rawHost) {
+    const trimmed = rawHost?.trim();
+    if (!trimmed) return "";
+    try {
+      const withProtocol = /^https?:\/\//i.test(trimmed)
+        ? trimmed
+        : `http://${trimmed}`;
+      const parsed = new URL(withProtocol);
+      return parsed.hostname || parsed.host || "";
+    } catch (error) {
+      return trimmed
+        .replace(/^https?:\/\//i, "")
+        .split("/")[0]
+        .replace(/:\d+$/, "");
+    }
+  }
+
+  buildUrlFromHostPort(host, port) {
+    const normalizedHost = this.normalizeHost(host);
+    const trimmedPort = String(port || "").trim();
+    if (!normalizedHost || !trimmedPort) return "";
+    const isIpv6 =
+      normalizedHost.includes(":") && !normalizedHost.startsWith("[");
+    const hostPart = isIpv6 ? `[${normalizedHost}]` : normalizedHost;
+    return `http://${hostPart}:${trimmedPort}`;
+  }
+
+  parseHostPort(url) {
+    const normalized = this.normalizeUrl(url);
+    try {
+      const parsed = new URL(normalized);
+      return {
+        host: parsed.hostname || "",
+        port: parsed.port || "80",
+      };
+    } catch (error) {
+      return { host: "", port: "" };
+    }
+  }
+
   extractHost(url) {
     if (!url) return "";
     try {
@@ -169,13 +209,17 @@ class ServerManager {
   async addServer(name, url, token = null, group = null, tags = null) {
     const trimmedName = name?.trim();
     const trimmedUrl = this.normalizeUrl(url);
+    const trimmedToken = token?.trim();
     if (!trimmedName || !trimmedUrl) {
       throw new Error("name and url are required");
+    }
+    if (!trimmedToken) {
+      throw new Error("token is required");
     }
 
     const normalizedGroup = this.normalizeGroup(group);
     const normalizedTags = this.normalizeTags(tags);
-    const resolvedToken = token?.trim() || null;
+    const resolvedToken = trimmedToken;
 
     if (window.desktopAPI?.createServer) {
       const created = await window.desktopAPI.createServer({
@@ -232,8 +276,12 @@ class ServerManager {
   async editServer(id, name, url, token = null, group = null, tags = null) {
     const trimmedName = name?.trim();
     const trimmedUrl = this.normalizeUrl(url);
+    const trimmedToken = token?.trim();
     if (!trimmedName || !trimmedUrl) {
       throw new Error("name and url are required");
+    }
+    if (!trimmedToken) {
+      throw new Error("token is required");
     }
 
     const normalizedGroup = this.normalizeGroup(group);
@@ -244,7 +292,7 @@ class ServerManager {
         id,
         name: trimmedName,
         url: trimmedUrl,
-        token: token?.trim() || null,
+        token: trimmedToken,
         group: normalizedGroup,
         tags: this.formatTags(normalizedTags),
       });
@@ -276,7 +324,7 @@ class ServerManager {
     if (server) {
       server.name = trimmedName;
       server.url = trimmedUrl;
-      server.token = token?.trim() || null;
+      server.token = trimmedToken;
       server.group = normalizedGroup;
       server.tags = normalizedTags;
       this.saveServers();
@@ -1238,7 +1286,15 @@ class ServerManager {
   showEditModal(server) {
     const modal = document.getElementById("editServerModal");
     document.getElementById("editServerNameInput").value = server.name;
-    document.getElementById("editServerHostInput").value = server.url;
+    const parsed = this.parseHostPort(server.url);
+    const editHostInput = document.getElementById("editServerIpInput");
+    if (editHostInput) {
+      editHostInput.value = parsed.host;
+    }
+    const editPortInput = document.getElementById("editServerPortInput");
+    if (editPortInput) {
+      editPortInput.value = parsed.port;
+    }
     const editGroupInput = document.getElementById("editServerGroupInput");
     if (editGroupInput) {
       editGroupInput.value = server.group || "";
@@ -1265,7 +1321,9 @@ class ServerManager {
     document.getElementById("editServerForm").onsubmit = (e) => {
       e.preventDefault();
       const name = document.getElementById("editServerNameInput").value;
-      const url = document.getElementById("editServerHostInput").value;
+      const host = document.getElementById("editServerIpInput").value;
+      const port = document.getElementById("editServerPortInput").value;
+      const url = this.buildUrlFromHostPort(host, port);
       const token =
         document.getElementById("editServerTokenInput")?.value || null;
       const group =
@@ -1321,12 +1379,14 @@ class ServerManager {
     addForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const name = document.getElementById("serverNameInput").value;
-      const url = document.getElementById("serverHostInput").value;
+      const host = document.getElementById("serverIpInput").value;
+      const port = document.getElementById("serverPortInput").value;
+      const url = this.buildUrlFromHostPort(host, port);
       const token = document.getElementById("serverTokenInput").value || null;
       const group = document.getElementById("serverGroupInput")?.value || "";
       const tags = document.getElementById("serverTagsInput")?.value || "";
 
-      if (!name || !url) {
+      if (!name || !host || !port || !token) {
         alert("Please fill in all required fields");
         return;
       }
@@ -1415,12 +1475,14 @@ window.handleAddServerSubmit = async function handleAddServerSubmit(event) {
   }
 
   const name = document.getElementById("serverNameInput").value;
-  const url = document.getElementById("serverHostInput").value;
+  const host = document.getElementById("serverIpInput").value;
+  const port = document.getElementById("serverPortInput").value;
+  const url = window.serverManager.buildUrlFromHostPort(host, port);
   const token = document.getElementById("serverTokenInput").value || null;
   const group = document.getElementById("serverGroupInput")?.value || "";
   const tags = document.getElementById("serverTagsInput")?.value || "";
 
-  if (!name || !url) {
+  if (!name || !host || !port || !token) {
     alert("Please fill in all required fields");
     return false;
   }
