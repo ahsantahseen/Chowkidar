@@ -72,7 +72,7 @@ curl -fsSL https://raw.githubusercontent.com/ahsantahseen/Chowkidar/main/scripts
 ## Connect the GUI
 
 Set the backend URL in the desktop app when prompted or via `desktop/config.json`.
-Generate a token on the agent host with `./chowkidar --print-token`, then paste
+Generate a token on the agent host with `chowkidar-agent --print-token`, then paste
 it into the server configuration in the desktop app.
 
 ## Token
@@ -81,7 +81,7 @@ Generate a token on the agent host (CLI only). There is no HTTP endpoint for
 token issuance because exposing it over the network is a bad practice.
 
 ```bash
-./chowkidar --print-token
+chowkidar-agent --print-token
 ```
 
 ## Environment
@@ -206,7 +206,7 @@ sudo systemctl status chowkidar
 2. **Rotate Tokens Every 90 Days**
 
    ```bash
-   make token  # Generate new token
+   chowkidar-agent --print-token  # Generate new token
    ```
 
 3. **Use Strong Secrets**
@@ -268,7 +268,7 @@ echo $HTTP_PROXY
 make dev
 
 # Terminal 2: Generate token
-make token
+chowkidar-agent --print-token
 
 # Terminal 3: Simulate agent (send test metrics)
 go run internal/agent/main.go \
@@ -310,7 +310,6 @@ chowkidar/
 3. Make your changes
 4. Add tests
 5. Submit a pull request
-
 
 ## Support
 
