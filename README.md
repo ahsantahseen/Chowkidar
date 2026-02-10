@@ -1,11 +1,54 @@
 # Chowkidar
 
-A lightweight monitoring stack with a desktop GUI and deployable agents for your servers.
+> **Chowkidar** (Hindi/Urdu: "watchman") — a lightweight, fast, and elegant monitoring solution for your servers.
 
-## Components
+Monitor your infrastructure with a beautiful desktop dashboard and lightweight agents deployed across your servers. Built for speed, security, and simplicity.
 
-- **Agent**: runs on each server and streams metrics.
-- **Desktop GUI**: connect to agents and visualize metrics.
+## 🎯 Overview
+
+Chowkidar is a modern monitoring stack designed for DevOps engineers and system administrators who need:
+
+- **Real-time visibility** into server metrics (CPU, memory, disk, network)
+- **Zero configuration complexity** — deploy in seconds
+- **Lightweight agents** — minimal resource footprint (~20MB memory per agent)
+- **Beautiful UI** — intuitive desktop dashboard for macOS, Windows, and Linux
+- **Secure by design** — JWT-based authentication, no exposed token endpoints
+- **Self-hosted** — complete control over your monitoring data
+
+## 🏗️ Architecture
+
+Chowkidar follows a simple hub-and-spoke model:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│              Desktop Dashboard (macOS/Win/Linux)         │
+│                  Real-time WebSocket                     │
+└────┬──────────────────────────────┬──────────────────────┘
+     │ (JWT Auth)                   │
+     │                              │
+  ┌──▼───────────┐           ┌──────▼──────┐
+  │  Agent 1     │           │  Agent 2    │
+  │ (Server A)   │           │ (Server B)  │
+  │ Port 8080    │           │ Port 8080   │
+  └──────────────┘           └─────────────┘
+```
+
+## 🚀 Key Features
+
+- **Lightweight Agents** — ~20MB memory, <1% CPU usage per server
+- **Real-time Metrics** — CPU, Memory, Disk, Network, Process info
+- **WebSocket Support** — low-latency live updates
+- **REST API** — fetch metrics programmatically
+- **JWT Authentication** — secure agent-to-dashboard communication
+- **Cross-Platform** — Linux (systemd), macOS, Windows support
+- **CORS & Proxy Support** — seamless reverse proxy integration
+- **24-hour History** — retain metrics for trend analysis
+
+## 🛠️ Components
+
+- **Agent** — lightweight Go binary deployed on each server, streams metrics via WebSocket
+- **Desktop GUI** — Electron + Vue.js dashboard for monitoring multiple agents
+- **REST API** — HTTP endpoints for metrics (CPU, memory, disk, network, processes)
 
 ## Screenshots
 
