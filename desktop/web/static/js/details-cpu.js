@@ -86,7 +86,7 @@ function initializeChart() {
 
 async function fetchAndUpdate() {
   try {
-    const response = await fetch(buildUrl("/metrics/cpu"));
+    const response = await window.authFetch(buildUrl("/metrics/cpu"));
     const cpu = await response.json();
 
     const cpuUsage = Math.max(0, Math.min(100, cpu.usage_percent || 0));
@@ -111,7 +111,7 @@ async function fetchAndUpdate() {
     }
 
     // Update top processes
-    const dashboardResponse = await fetch(buildUrl("/dashboard"));
+    const dashboardResponse = await window.authFetch(buildUrl("/dashboard"));
     const dashboard = await dashboardResponse.json();
     const topProcesses = dashboard.current.top_processes.slice(0, 10);
 
@@ -131,7 +131,7 @@ async function fetchAndUpdate() {
       .join("");
 
     // Update trend chart
-    const historyResponse = await fetch(
+    const historyResponse = await window.authFetch(
       buildUrl("/metrics/history?metric=cpu&duration=24h"),
     );
     const history = await historyResponse.json();
@@ -163,13 +163,15 @@ async function fetchAndUpdate() {
 
   // Fetch CPU info and compatibility
   try {
-    const cpuInfoResponse = await fetch(buildUrl("/metrics/cpu/info"));
+    const cpuInfoResponse = await window.authFetch(
+      buildUrl("/metrics/cpu/info"),
+    );
     if (cpuInfoResponse.ok) {
       const cpuInfo = await cpuInfoResponse.json();
       updateCPUInfo(cpuInfo);
     }
 
-    const compatibilityResponse = await fetch(
+    const compatibilityResponse = await window.authFetch(
       buildUrl("/metrics/cpu/compatibility"),
     );
     if (compatibilityResponse.ok) {

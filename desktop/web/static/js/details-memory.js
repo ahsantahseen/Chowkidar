@@ -106,7 +106,7 @@ function initializeChart() {
 
 async function fetchAndUpdate() {
   try {
-    const response = await fetch(buildUrl("/metrics/memory"));
+    const response = await window.authFetch(buildUrl("/metrics/memory"));
     const memory = await response.json();
 
     const usedGb = memory.used_gb || 0;
@@ -132,7 +132,7 @@ async function fetchAndUpdate() {
     memoryBreakdownChart.update("none");
 
     // Update top processes
-    const dashboardResponse = await fetch(buildUrl("/dashboard"));
+    const dashboardResponse = await window.authFetch(buildUrl("/dashboard"));
     const dashboard = await dashboardResponse.json();
     const topProcesses = dashboard.current.top_processes.slice(0, 10);
 
@@ -152,7 +152,7 @@ async function fetchAndUpdate() {
       .join("");
 
     // Update trend chart
-    const historyResponse = await fetch(
+    const historyResponse = await window.authFetch(
       buildUrl("/metrics/history?metric=memory&duration=24h"),
     );
     const history = await historyResponse.json();

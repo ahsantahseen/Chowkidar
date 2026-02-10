@@ -173,7 +173,9 @@ function initializeDataTable() {
 
 async function fetchAndUpdate() {
   try {
-    const response = await fetch(buildUrl("/metrics/network/aggregated"));
+    const response = await window.authFetch(
+      buildUrl("/metrics/network/aggregated"),
+    );
     const network = await response.json();
 
     // Update current metrics
@@ -214,7 +216,9 @@ async function fetchAndUpdate() {
       (bytesRecv / 1024 / 1024 / 1024).toFixed(2) + " GB";
 
     // Fetch individual interfaces data
-    const interfacesResponse = await fetch(buildUrl("/metrics/network"));
+    const interfacesResponse = await window.authFetch(
+      buildUrl("/metrics/network"),
+    );
     const interfaces = await interfacesResponse.json();
 
     if (interfacesTable) {
@@ -234,7 +238,7 @@ async function fetchAndUpdate() {
 
     // Update trend chart
     try {
-      const historyResponse = await fetch(
+      const historyResponse = await window.authFetch(
         buildUrl("/metrics/history?metric=network&duration=24h"),
       );
       const history = await historyResponse.json();

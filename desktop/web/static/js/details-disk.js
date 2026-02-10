@@ -106,7 +106,7 @@ function initializeChart() {
 
 async function fetchAndUpdate() {
   try {
-    const response = await fetch(buildUrl("/metrics/disk"));
+    const response = await window.authFetch(buildUrl("/metrics/disk"));
     const disk = await response.json();
 
     const diskPercent = Math.max(
@@ -134,7 +134,7 @@ async function fetchAndUpdate() {
     diskBreakdownChart.update("none");
 
     // Update trend chart
-    const historyResponse = await fetch(
+    const historyResponse = await window.authFetch(
       buildUrl("/metrics/history?metric=disk&duration=24h"),
     );
     const history = await historyResponse.json();
@@ -170,7 +170,7 @@ async function fetchAndUpdate() {
 // Update disk info (df -h style)
 async function updateDiskInfo() {
   try {
-    const response = await fetch(buildUrl("/dashboard"));
+    const response = await window.authFetch(buildUrl("/dashboard"));
     const dashboardData = await response.json();
 
     if (!dashboardData || !dashboardData.disk_partitions) {
@@ -215,7 +215,7 @@ async function updateDiskInfo() {
 // Update top directories listing
 async function updateTopDirectories() {
   try {
-    const response = await fetch(buildUrl("/dashboard"));
+    const response = await window.authFetch(buildUrl("/dashboard"));
     const dashboardData = await response.json();
 
     if (!dashboardData || !dashboardData.top_directories) {

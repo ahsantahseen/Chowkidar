@@ -36,6 +36,28 @@ function getSelectedServerHost() {
   }
 }
 
+function getBaseUrl() {
+  if (window.CHOWKIDAR_BASE_URL) {
+    return window.CHOWKIDAR_BASE_URL;
+  }
+  try {
+    const stored = sessionStorage.getItem("chowkidar_selected_server");
+    if (stored) {
+      const selected = JSON.parse(stored);
+      if (selected && selected.url) {
+        return selected.url.replace(/\/$/, "");
+      }
+    }
+  } catch (error) {
+    // ignore
+  }
+  return window.location.origin;
+}
+
+function buildUrl(path) {
+  return `${getBaseUrl()}${path}`;
+}
+
 // Initialize dashboard
 document.addEventListener("DOMContentLoaded", () => {
   console.log("📊 Initializing Chowkidar Dashboard...");
@@ -125,7 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // Fetch dashboard data (fallback for HTTP polling)
 async function fetchDashboardData() {
   try {
-    const response = await fetch("/dashboard");
+    const response = await window.authFetch(buildUrl("/dashboard"));
     dashboardData = await response.json();
 
     if (dashboardData) {

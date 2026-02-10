@@ -10,6 +10,8 @@ import (
 	"sync"
 	"time"
 
+	"chowkidar/internal/services"
+
 	"github.com/gin-gonic/gin"
 	"golang.org/x/time/rate"
 )
@@ -172,6 +174,42 @@ func CORSMiddleware(allowedOrigins []string) gin.HandlerFunc {
 
 		if c.Request.Method == http.MethodOptions {
 			c.AbortWithStatus(http.StatusNoContent)
+			return
+		}
+
+		c.Next()
+	}
+}
+
+// AuthMiddleware enforces Bearer token authentication
+func AuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authHeader := c.GetHeader("Authorization")
+		if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
+			if GlobalSecurityLogger != nil {
+				GlobalSecurityLogger.LogFailedAuth(c.ClientIP(), "missing bearer token")
+			}
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "authorization required"})
+			c.Abort()
+			return
+		}
+
+		token := strings.TrimSpace(strings.TrimPrefix(authHeader, "Bearer "))
+		if token == "" {
+			if GlobalSecurityLogger != nil {
+				GlobalSecurityLogger.LogFailedAuth(c.ClientIP(), "empty token")
+			}
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "authorization required"})
+			c.Abort()
+			return
+		}
+
+		if _, err := services.ValidateToken(token); err != nil {
+			if GlobalSecurityLogger != nil {
+				GlobalSecurityLogger.LogFailedAuth(c.ClientIP(), "invalid token: "+err.Error())
+			}
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+			c.Abort()
 			return
 		}
 

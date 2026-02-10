@@ -25,6 +25,17 @@ function buildUrl(path) {
   return `${getBaseUrl()}${path}`;
 }
 
+async function authFetch(url, options = {}) {
+  const token = await authManager.getValidToken();
+  if (!token) {
+    throw new Error("Missing auth token");
+  }
+  const headers = new Headers(options.headers || {});
+  headers.set("Authorization", `Bearer ${token}`);
+  headers.set("Accept", "application/json");
+  return fetch(url, { ...options, headers });
+}
+
 class AuthManager {
   constructor() {
     this.token = null;
@@ -143,3 +154,4 @@ class AuthManager {
 
 // Global auth manager instance
 const authManager = new AuthManager();
+window.authFetch = authFetch;

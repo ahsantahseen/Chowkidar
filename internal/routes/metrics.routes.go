@@ -2,6 +2,7 @@ package routes
 
 import (
 	"chowkidar/internal/controllers"
+	"chowkidar/internal/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -9,7 +10,7 @@ import (
 // RegisterMonitorRoutes registers all system metrics endpoints
 // These endpoints provide real-time and historical system statistics
 func RegisterMonitorRoutes(r *gin.Engine) {
-	metrics := r.Group("/metrics")
+	metrics := r.Group("/metrics", middleware.AuthMiddleware())
 	{
 		metrics.GET("/", controllers.GetStatus)                              // System status summary
 		metrics.GET("/cpu", controllers.GetCPU)                              // Current CPU metrics
@@ -24,5 +25,5 @@ func RegisterMonitorRoutes(r *gin.Engine) {
 	}
 
 	// Dashboard main endpoint
-	r.GET("/dashboard", controllers.GetDashboard)
+	r.GET("/dashboard", middleware.AuthMiddleware(), controllers.GetDashboard)
 }

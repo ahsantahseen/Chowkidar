@@ -134,11 +134,14 @@ class ServerManager {
     return `static/icons/os-${osKey}.svg`;
   }
 
-  async fetchWithTimeout(url, timeoutMs = 4000) {
+  async fetchWithTimeout(url, timeoutMs = 4000, options = {}) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), timeoutMs);
     try {
-      const response = await fetch(url, { signal: controller.signal });
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+      });
       return response;
     } finally {
       clearTimeout(timeout);
@@ -1220,10 +1223,20 @@ class ServerManager {
     await Promise.all(
       serversToCheck.map(async (server) => {
         if (!server?.url) return;
+        const token = server.token?.trim();
+        if (!token) {
+          this.updateServerStatus(server.id, "error", "missing token");
+          return;
+        }
         try {
           const response = await this.fetchWithTimeout(
             `${server.url}/metrics/cpu`,
             4000,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
           );
           if (response.ok) {
             this.updateServerStatus(server.id, "online", "");
