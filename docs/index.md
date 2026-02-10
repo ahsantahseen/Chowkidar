@@ -84,15 +84,44 @@ Generate a token on the agent host (CLI only). There is no HTTP endpoint for
 token issuance because exposing it over the network is a bad practice.
 
 ```bash
-./chowkidar --print-token
+chowkidar-agent --print-token
 ```
 
 ## Environment
 
 - `CHOWKIDAR_HOST` (default: `127.0.0.1`)
 - `CHOWKIDAR_PORT` (default: `8080`)
-- `CHOWKIDAR_ALLOWED_ORIGINS` (comma-separated)
+- `CHOWKIDAR_ALLOWED_ORIGINS` (comma-separated; if unset, allows any Origin)
 - `CHOWKIDAR_TRUSTED_PROXIES` (comma-separated IPs/CIDRs for reverse proxies)
+
+### Where to set environment variables
+
+**systemd (Linux service)**
+
+```
+sudo systemctl edit chowkidar-agent
+```
+
+```
+[Service]
+Environment=CHOWKIDAR_HOST=0.0.0.0
+Environment=CHOWKIDAR_PORT=9090
+Environment=CHOWKIDAR_ALLOWED_ORIGINS=
+Environment=CHOWKIDAR_TRUSTED_PROXIES=
+```
+
+```
+sudo systemctl daemon-reload
+sudo systemctl restart chowkidar-agent
+```
+
+**Shell (manual run)**
+
+```
+export CHOWKIDAR_HOST=0.0.0.0
+export CHOWKIDAR_PORT=9090
+./chowkidar-agent
+```
 
 ## Screenshots
 
