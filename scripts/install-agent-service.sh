@@ -149,6 +149,7 @@ After=network.target
 [Service]
 Type=simple
 Environment=CHOWKIDAR_PORT=${PORT}
+Environment=GIN_MODE=release
 ExecStart=${INSTALL_DIR}/${BINARY_NAME}
 Restart=on-failure
 RestartSec=5
