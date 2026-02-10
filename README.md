@@ -311,17 +311,6 @@ chowkidar/
 4. Add tests
 5. Submit a pull request
 
-## Roadmap
-
-- [x] Basic monitoring dashboard
-- [x] Agent framework
-- [ ] Process monitoring
-- [ ] Alert notifications
-- [ ] Metrics export (Prometheus)
-- [ ] Custom dashboards
-- [ ] Mobile app
-- [ ] Docker support
-- [ ] Kubernetes integration
 
 ## Support
 
