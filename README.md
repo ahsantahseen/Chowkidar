@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="docs/assets/chowkidar-logo.png" alt="Chowkidar Logo" width="200" />
+</div>
+
 # Chowkidar
 
 > **Chowkidar** (Hindi/Urdu: "watchman") — a lightweight, fast, and elegant monitoring solution for your servers.
