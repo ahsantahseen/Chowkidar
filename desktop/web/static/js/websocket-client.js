@@ -33,7 +33,26 @@ class WebSocketStatsClient {
       // Get valid token
       let token = await this.authManager.getValidToken();
       if (!token) {
-        throw new Error("Failed to obtain authentication token");
+        try {
+          const stored = sessionStorage.getItem("chowkidar_selected_server");
+          if (stored) {
+            const selected = JSON.parse(stored);
+            if (selected?.token) {
+              token = selected.token;
+              this.authManager.token = token;
+            }
+          }
+        } catch (error) {
+          // ignore
+        }
+      }
+      if (!token) {
+        this.isConnecting = false;
+        this.updateConnectionStatus("error");
+        alert(
+          "Missing token. Go back to Servers and paste the token for this host.",
+        );
+        return;
       }
 
       let baseUrl = window.CHOWKIDAR_BASE_URL || window.location.origin;
