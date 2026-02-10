@@ -45,20 +45,31 @@ func InitAuthService(secretKey string, tokenExpiry time.Duration) *AuthService {
 
 	if secretKey == "" {
 		// Try multiple locations for the secret key file
-		// Primary: User's home directory
-		homeDir, _ := os.UserHomeDir()
-		keyFile := filepath.Join(homeDir, ".chowkidar-secret-key")
-
-		// Backup: Temp directory
-		if homeDir == "" {
-			keyFile = filepath.Join(os.TempDir(), ".chowkidar-secret-key")
+		// Primary: /etc/chowkidar/secret.key (systemd service location)
+		keyLocations := []string{
+			"/etc/chowkidar/secret.key",
 		}
 
-		// Check if secret key file exists
-		if data, err := os.ReadFile(keyFile); err == nil && len(data) > 0 {
-			secretKey = strings.TrimSpace(string(data))
-			log.Printf("✓ Loaded persisted secret key from %s (length: %d bytes)\n", keyFile, len(secretKey))
-		} else {
+		// Secondary: User's home directory
+		if homeDir, err := os.UserHomeDir(); err == nil && homeDir != "" {
+			keyLocations = append(keyLocations, filepath.Join(homeDir, ".chowkidar-secret-key"))
+		}
+
+		// Tertiary: Temp directory
+		keyLocations = append(keyLocations, filepath.Join(os.TempDir(), ".chowkidar-secret-key"))
+
+		// Check each location in order
+		var keyFile string
+		for _, loc := range keyLocations {
+			if data, err := os.ReadFile(loc); err == nil && len(data) > 0 {
+				secretKey = strings.TrimSpace(string(data))
+				keyFile = loc
+				log.Printf("✓ Loaded persisted secret key from %s (length: %d bytes)\n", keyFile, len(secretKey))
+				break
+			}
+		}
+
+		if secretKey == "" {
 			// Generate a strong secret key (32+ bytes for HMAC-SHA256)
 			hostname, err := os.Hostname()
 			if err != nil {
@@ -79,6 +90,23 @@ func InitAuthService(secretKey string, tokenExpiry time.Duration) *AuthService {
 			}
 
 			// Save the generated secret key to file for future use
+			// Try /etc/chowkidar first, then home directory
+			keyFile := "/etc/chowkidar/secret.key"
+			if homeDir, err := os.UserHomeDir(); err == nil && homeDir != "" {
+				// Check if we can write to /etc/chowkidar
+				if _, err := os.Stat("/etc/chowkidar"); os.IsNotExist(err) {
+					keyFile = filepath.Join(homeDir, ".chowkidar-secret-key")
+				}
+			} else {
+				keyFile = filepath.Join(os.TempDir(), ".chowkidar-secret-key")
+			}
+
+			// Create directory if needed
+			keyDir := filepath.Dir(keyFile)
+			if err := os.MkdirAll(keyDir, 0700); err != nil {
+				log.Printf("⚠️  Warning: Could not create directory %s: %v\n", keyDir, err)
+			}
+
 			if err := os.WriteFile(keyFile, []byte(secretKey), 0600); err != nil {
 				log.Printf("⚠️  Warning: Could not persist secret key to %s: %v\n", keyFile, err)
 			} else {
