@@ -89,6 +89,7 @@ chowkidar-agent --print-token
 - `CHOWKIDAR_HOST` (default: `127.0.0.1`)
 - `CHOWKIDAR_PORT` (default: `8080`)
 - `CHOWKIDAR_ALLOWED_ORIGINS` (comma-separated)
+- `CHOWKIDAR_ALLOWED_ORIGINS` (comma-separated; if unset, allows any Origin)
 - `CHOWKIDAR_TRUSTED_PROXIES` (comma-separated IPs/CIDRs for reverse proxies)
 
 ## Development (optional)

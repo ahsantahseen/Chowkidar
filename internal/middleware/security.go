@@ -129,28 +129,32 @@ func CORSMiddleware(allowedOrigins []string) gin.HandlerFunc {
 
 		// Check if origin is in allowed list
 		allowed := false
-		for _, o := range allowedOrigins {
-			trimmed := strings.TrimSpace(o)
-			if trimmed == "" {
-				continue
-			}
-			trimmed = strings.TrimRight(trimmed, "/")
-			if trimmed == "*" || normalizedOrigin == trimmed {
-				allowed = true
-				break
-			}
-			if trimmed == "chowkidar://app" && strings.HasPrefix(normalizedOrigin, "chowkidar://") {
-				allowed = true
-				break
-			}
-			if normalizedOrigin == "null" && trimmed == "chowkidar://app" {
-				allowed = true
-				break
-			}
-			if !strings.Contains(trimmed, "://") {
-				if parsed, err := url.Parse(normalizedOrigin); err == nil && parsed.Host == trimmed {
+		if len(allowedOrigins) == 0 {
+			allowed = normalizedOrigin != ""
+		} else {
+			for _, o := range allowedOrigins {
+				trimmed := strings.TrimSpace(o)
+				if trimmed == "" {
+					continue
+				}
+				trimmed = strings.TrimRight(trimmed, "/")
+				if trimmed == "*" || normalizedOrigin == trimmed {
 					allowed = true
 					break
+				}
+				if trimmed == "chowkidar://app" && strings.HasPrefix(normalizedOrigin, "chowkidar://") {
+					allowed = true
+					break
+				}
+				if normalizedOrigin == "null" && trimmed == "chowkidar://app" {
+					allowed = true
+					break
+				}
+				if !strings.Contains(trimmed, "://") {
+					if parsed, err := url.Parse(normalizedOrigin); err == nil && parsed.Host == trimmed {
+						allowed = true
+						break
+					}
 				}
 			}
 		}

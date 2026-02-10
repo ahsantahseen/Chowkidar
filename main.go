@@ -105,11 +105,8 @@ func main() {
 	// Add rate limiting to all endpoints
 	r.Use(middleware.RateLimitMiddleware(rateLimiter))
 
-	// Configure CORS - allow localhost and specific origins
-	allowedOrigins := []string{"http://localhost:3000", "http://localhost:8080", "http://127.0.0.1:8080", "chowkidar://app"}
-	if port != "" {
-		allowedOrigins = append(allowedOrigins, "http://"+net.JoinHostPort(displayHost, port))
-	}
+	// Configure CORS - dynamic allow when CHOWKIDAR_ALLOWED_ORIGINS is unset
+	allowedOrigins := []string{}
 	corsEnv := os.Getenv("CHOWKIDAR_ALLOWED_ORIGINS")
 	if corsEnv != "" {
 		for _, origin := range strings.Split(corsEnv, ",") {
