@@ -31,6 +31,18 @@ var authService *AuthService
 
 // InitAuthService initializes the authentication service
 func InitAuthService(secretKey string, tokenExpiry time.Duration) *AuthService {
+	secretKeyFileEnv := strings.TrimSpace(os.Getenv("CHOWKIDAR_SECRET_KEY_FILE"))
+	if secretKey == "" {
+		if secretKeyFileEnv != "" {
+			if data, err := os.ReadFile(secretKeyFileEnv); err == nil && len(data) > 0 {
+				secretKey = strings.TrimSpace(string(data))
+				log.Printf("✓ Loaded persisted secret key from %s (length: %d bytes)\n", secretKeyFileEnv, len(secretKey))
+			} else if err != nil {
+				log.Printf("⚠️  Warning: Could not read secret key from %s: %v\n", secretKeyFileEnv, err)
+			}
+		}
+	}
+
 	if secretKey == "" {
 		// Try multiple locations for the secret key file
 		// Primary: User's home directory

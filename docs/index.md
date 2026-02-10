@@ -93,6 +93,7 @@ chowkidar-agent --print-token
 - `CHOWKIDAR_PORT` (default: `8080`)
 - `CHOWKIDAR_ALLOWED_ORIGINS` (comma-separated; if unset, allows any Origin)
 - `CHOWKIDAR_TRUSTED_PROXIES` (comma-separated IPs/CIDRs for reverse proxies)
+- `CHOWKIDAR_SECRET_KEY_FILE` (path to shared secret key file for tokens)
 
 ### Where to set environment variables
 

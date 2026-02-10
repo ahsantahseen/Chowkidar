@@ -7,6 +7,9 @@ BINARY_NAME="chowkidar-agent"
 SERVICE_NAME="${SERVICE_NAME:-chowkidar-agent}"
 RELEASE_TAG="${RELEASE_TAG:-latest}"
 DEFAULT_PORT="${CHOWKIDAR_PORT:-8080}"
+SERVICE_USER="${SERVICE_USER:-${SUDO_USER:-root}}"
+SECRET_DIR="/etc/chowkidar"
+SECRET_FILE="${CHOWKIDAR_SECRET_KEY_FILE:-${SECRET_DIR}/secret.key}"
 
 if [[ "$EUID" -ne 0 ]]; then
   echo "This installer must be run as root. Try: sudo $0"
@@ -141,6 +144,17 @@ mkdir -p "$INSTALL_DIR"
 curl -fsSL "$URL" -o "$INSTALL_DIR/$BINARY_NAME"
 chmod +x "$INSTALL_DIR/$BINARY_NAME"
 
+mkdir -p "$SECRET_DIR"
+if [[ ! -f "$SECRET_FILE" ]]; then
+  if command -v openssl >/dev/null 2>&1; then
+    openssl rand -hex 32 > "$SECRET_FILE"
+  else
+    head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \n' > "$SECRET_FILE"
+  fi
+fi
+chown "$SERVICE_USER" "$SECRET_FILE" || true
+chmod 600 "$SECRET_FILE"
+
 cat >/etc/systemd/system/${SERVICE_NAME}.service <<EOF
 [Unit]
 Description=Chowkidar Agent
@@ -148,8 +162,10 @@ After=network.target
 
 [Service]
 Type=simple
+User=${SERVICE_USER}
 Environment=CHOWKIDAR_PORT=${PORT}
 Environment=GIN_MODE=release
+Environment=CHOWKIDAR_SECRET_KEY_FILE=${SECRET_FILE}
 ExecStart=${INSTALL_DIR}/${BINARY_NAME}
 Restart=on-failure
 RestartSec=5
