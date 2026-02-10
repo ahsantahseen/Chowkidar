@@ -1259,6 +1259,7 @@ class ServerManager {
           id: server.id,
           name: server.name,
           url: server.url,
+          token: server.token || "",
         }),
       );
     } catch (error) {

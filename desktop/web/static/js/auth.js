@@ -42,6 +42,16 @@ class AuthManager {
    */
   loadStoredToken() {
     try {
+      const storedServer = sessionStorage.getItem("chowkidar_selected_server");
+      if (storedServer) {
+        const selected = JSON.parse(storedServer);
+        if (selected?.token) {
+          this.token = selected.token;
+          this.tokenExpiry = null;
+          console.log("✓ Loaded token from selected server");
+          return true;
+        }
+      }
       const stored = localStorage.getItem(this.storageKey);
       const expiry = localStorage.getItem(this.expiryKey);
 
@@ -79,19 +89,10 @@ class AuthManager {
    * Get valid token, generating one if needed
    */
   async getValidToken() {
-    // Check if current token is still valid (with 5 minute buffer)
-    if (this.token && this.tokenExpiry) {
-      const bufferTime = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
-      if (this.tokenExpiry > bufferTime) {
-        console.log("✓ Using existing token");
-        return this.token;
-      } else {
-        console.log("⚠️ Token expiring soon, generating new one");
-      }
+    if (this.token) {
+      return this.token;
     }
-
-    // Token generation is disabled; return existing token if any
-    return this.token;
+    return null;
   }
 
   /**

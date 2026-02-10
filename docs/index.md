@@ -80,7 +80,8 @@ the app will request a token automatically from the agent on first connect.
 
 ## Token
 
-Generate a token on the agent host (CLI only):
+Generate a token on the agent host (CLI only). There is no HTTP endpoint for
+token issuance because exposing it over the network is a bad practice.
 
 ```bash
 ./chowkidar --print-token

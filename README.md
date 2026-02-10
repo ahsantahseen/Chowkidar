@@ -77,7 +77,8 @@ it into the server configuration in the desktop app.
 
 ## Token
 
-Generate a token on the agent host (CLI only):
+Generate a token on the agent host (CLI only). There is no HTTP endpoint for
+token issuance because exposing it over the network is a bad practice.
 
 ```bash
 ./chowkidar --print-token
