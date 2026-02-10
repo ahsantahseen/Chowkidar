@@ -88,12 +88,19 @@ jobs:
           name: agents
           path: release-artifacts/agents
 
+      - name: List artifacts
+        run: |
+          echo "=== Release Artifacts ==="
+          find release-artifacts -type f | sort
+          
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             release-artifacts/**/Chowkidar*.dmg
-            release-artifacts/**/Chowkidar*.zip
+            release-artifacts/**/Chowkidar*.dmg.blockmap
+            release-artifacts/**/Chowkidar*-mac.zip
+            release-artifacts/**/Chowkidar*-mac.zip.blockmap
             release-artifacts/**/Chowkidar*.exe
             release-artifacts/agents/*
         env:
